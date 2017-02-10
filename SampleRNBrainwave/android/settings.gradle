@@ -1,0 +1,6 @@
+rootProject.name = 'SampleRNBrainwave'
+
+include ':app'
+
+include ':RNBrainwave'
+project(':RNBrainwave').projectDir = new File(settingsDir, '../../android')
