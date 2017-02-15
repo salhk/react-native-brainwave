@@ -1,4 +1,4 @@
-package com.samplernbrainwave;
+package tw.com.alchemytech.samplernbrainwave;
 
 import com.facebook.react.ReactActivity;
 

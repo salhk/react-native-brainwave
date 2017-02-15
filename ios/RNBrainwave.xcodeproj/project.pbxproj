@@ -6,6 +6,12 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		BF76EF0D1E52F4C100BB22D7 /* RNBrainwave.m in Sources */ = {isa = PBXBuildFile; fileRef = BF76EF0C1E52F4C100BB22D7 /* RNBrainwave.m */; };
+		BF76EF101E53070C00BB22D7 /* AlgoSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF76EF0F1E53070C00BB22D7 /* AlgoSdk.framework */; };
+		BF76EF121E53F30800BB22D7 /* StreamSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF76EF111E53F30800BB22D7 /* StreamSDK.a */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		11FA5C4F1C4A1296003AC2EE /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -20,6 +26,14 @@
 
 /* Begin PBXFileReference section */
 		11FA5C511C4A1296003AC2EE /* libRNBrainwave.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNBrainwave.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF76EF0B1E52F49200BB22D7 /* RNBrainwave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBrainwave.h; sourceTree = "<group>"; };
+		BF76EF0C1E52F4C100BB22D7 /* RNBrainwave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBrainwave.m; sourceTree = "<group>"; };
+		BF76EF0F1E53070C00BB22D7 /* AlgoSdk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AlgoSdk.framework; sourceTree = "<group>"; };
+		BF76EF111E53F30800BB22D7 /* StreamSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = StreamSDK.a; sourceTree = "<group>"; };
+		BF76EF171E54152800BB22D7 /* TGSEEGPower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGSEEGPower.h; sourceTree = "<group>"; };
+		BF76EF181E54152800BB22D7 /* TGStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStream.h; sourceTree = "<group>"; };
+		BF76EF191E54152800BB22D7 /* TGStreamDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStreamDelegate.h; sourceTree = "<group>"; };
+		BF76EF1A1E54152800BB22D7 /* TGStreamEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStreamEnum.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +41,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF76EF121E53F30800BB22D7 /* StreamSDK.a in Frameworks */,
+				BF76EF101E53070C00BB22D7 /* AlgoSdk.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -36,7 +52,10 @@
 		11FA5C481C4A1296003AC2EE = {
 			isa = PBXGroup;
 			children = (
+				BF76EF111E53F30800BB22D7 /* StreamSDK.a */,
+				BF76EF0A1E52F49200BB22D7 /* RNBrainwave */,
 				11FA5C521C4A1296003AC2EE /* Products */,
+				BF76EF0E1E53070C00BB22D7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -46,6 +65,27 @@
 				11FA5C511C4A1296003AC2EE /* libRNBrainwave.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BF76EF0A1E52F49200BB22D7 /* RNBrainwave */ = {
+			isa = PBXGroup;
+			children = (
+				BF76EF171E54152800BB22D7 /* TGSEEGPower.h */,
+				BF76EF181E54152800BB22D7 /* TGStream.h */,
+				BF76EF191E54152800BB22D7 /* TGStreamDelegate.h */,
+				BF76EF1A1E54152800BB22D7 /* TGStreamEnum.h */,
+				BF76EF0B1E52F49200BB22D7 /* RNBrainwave.h */,
+				BF76EF0C1E52F4C100BB22D7 /* RNBrainwave.m */,
+			);
+			path = RNBrainwave;
+			sourceTree = "<group>";
+		};
+		BF76EF0E1E53070C00BB22D7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BF76EF0F1E53070C00BB22D7 /* AlgoSdk.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -104,6 +144,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF76EF0D1E52F4C100BB22D7 /* RNBrainwave.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,11 +236,19 @@
 		11FA5C5B1C4A1296003AC2EE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../react-native/React/**",
 					"$(SRCROOT)/../../react-native/Libraries/Image",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -209,11 +258,19 @@
 		11FA5C5C1C4A1296003AC2EE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../../react-native/React/**",
 					"$(SRCROOT)/../../react-native/Libraries/Image",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
