@@ -7,151 +7,305 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BF76EF0D1E52F4C100BB22D7 /* RNBrainwave.m in Sources */ = {isa = PBXBuildFile; fileRef = BF76EF0C1E52F4C100BB22D7 /* RNBrainwave.m */; };
-		BF76EF101E53070C00BB22D7 /* AlgoSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF76EF0F1E53070C00BB22D7 /* AlgoSdk.framework */; };
-		BF76EF121E53F30800BB22D7 /* StreamSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF76EF111E53F30800BB22D7 /* StreamSDK.a */; };
+		BF20F69E1E56E03100BE3184 /* AlgoSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2BD0A31E551420008C679A /* AlgoSdk.framework */; };
+		BF20F6A01E56E7D600BE3184 /* canned_data.c in Sources */ = {isa = PBXBuildFile; fileRef = BF20F69F1E56E7D600BE3184 /* canned_data.c */; };
+		BF2BD0AD1E551420008C679A /* RNBrainwave.m in Sources */ = {isa = PBXBuildFile; fileRef = BF2BD0A61E551420008C679A /* RNBrainwave.m */; };
+		BF2BD0AE1E551420008C679A /* StreamSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2BD0AB1E551420008C679A /* StreamSDK.a */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		BF2BD0E81E555043008C679A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF2BD0DD1E555042008C679A /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 83CBBA2E1A601D0E00E9B192;
+			remoteInfo = React;
+		};
+		BF2BD0EA1E555043008C679A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF2BD0DD1E555042008C679A /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2D2A28131D9B038B00D4039D;
+			remoteInfo = "React-tvOS";
+		};
+		BF2BD0EC1E555043008C679A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF2BD0DD1E555042008C679A /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3D3C059A1DE3340900C268FA;
+			remoteInfo = yoga;
+		};
+		BF2BD0EE1E555043008C679A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF2BD0DD1E555042008C679A /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3D3C06751DE3340C00C268FA;
+			remoteInfo = "yoga-tvOS";
+		};
+		BF2BD0F01E555043008C679A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF2BD0DD1E555042008C679A /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3D3CD9251DE5FBEC00167DC4;
+			remoteInfo = cxxreact;
+		};
+		BF2BD0F21E555043008C679A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF2BD0DD1E555042008C679A /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3D3CD9321DE5FBEE00167DC4;
+			remoteInfo = "cxxreact-tvOS";
+		};
+		BF2BD0F41E555043008C679A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF2BD0DD1E555042008C679A /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3D3CD90B1DE5FBD600167DC4;
+			remoteInfo = jschelpers;
+		};
+		BF2BD0F61E555043008C679A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BF2BD0DD1E555042008C679A /* React.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3D3CD9181DE5FBD800167DC4;
+			remoteInfo = "jschelpers-tvOS";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
-		11FA5C4F1C4A1296003AC2EE /* CopyFiles */ = {
+		58B511D91A9E6C8500147676 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "include/$(PRODUCT_NAME)";
 			dstSubfolderSpec = 16;
 			files = (
 			);
+			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		11FA5C511C4A1296003AC2EE /* libRNBrainwave.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNBrainwave.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		BF76EF0B1E52F49200BB22D7 /* RNBrainwave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBrainwave.h; sourceTree = "<group>"; };
-		BF76EF0C1E52F4C100BB22D7 /* RNBrainwave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBrainwave.m; sourceTree = "<group>"; };
-		BF76EF0F1E53070C00BB22D7 /* AlgoSdk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AlgoSdk.framework; sourceTree = "<group>"; };
-		BF76EF111E53F30800BB22D7 /* StreamSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = StreamSDK.a; sourceTree = "<group>"; };
-		BF76EF171E54152800BB22D7 /* TGSEEGPower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGSEEGPower.h; sourceTree = "<group>"; };
-		BF76EF181E54152800BB22D7 /* TGStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStream.h; sourceTree = "<group>"; };
-		BF76EF191E54152800BB22D7 /* TGStreamDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStreamDelegate.h; sourceTree = "<group>"; };
-		BF76EF1A1E54152800BB22D7 /* TGStreamEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStreamEnum.h; sourceTree = "<group>"; };
+		134814201AA4EA6300B7C361 /* libRNBrainwave.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNBrainwave.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		BF20F69F1E56E7D600BE3184 /* canned_data.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = canned_data.c; sourceTree = "<group>"; };
+		BF2BD0A31E551420008C679A /* AlgoSdk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AlgoSdk.framework; sourceTree = "<group>"; };
+		BF2BD0A51E551420008C679A /* RNBrainwave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBrainwave.h; sourceTree = "<group>"; };
+		BF2BD0A61E551420008C679A /* RNBrainwave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBrainwave.m; sourceTree = "<group>"; };
+		BF2BD0A71E551420008C679A /* TGSEEGPower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGSEEGPower.h; sourceTree = "<group>"; };
+		BF2BD0A81E551420008C679A /* TGStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStream.h; sourceTree = "<group>"; };
+		BF2BD0A91E551420008C679A /* TGStreamDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStreamDelegate.h; sourceTree = "<group>"; };
+		BF2BD0AA1E551420008C679A /* TGStreamEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStreamEnum.h; sourceTree = "<group>"; };
+		BF2BD0AB1E551420008C679A /* StreamSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = StreamSDK.a; path = ../StreamSDK.a; sourceTree = "<group>"; };
+		BF2BD0DD1E555042008C679A /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		11FA5C4E1C4A1296003AC2EE /* Frameworks */ = {
+		58B511D81A9E6C8500147676 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF76EF121E53F30800BB22D7 /* StreamSDK.a in Frameworks */,
-				BF76EF101E53070C00BB22D7 /* AlgoSdk.framework in Frameworks */,
+				BF2BD0AE1E551420008C679A /* StreamSDK.a in Frameworks */,
+				BF20F69E1E56E03100BE3184 /* AlgoSdk.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		11FA5C481C4A1296003AC2EE = {
+		134814211AA4EA7D00B7C361 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				BF76EF111E53F30800BB22D7 /* StreamSDK.a */,
-				BF76EF0A1E52F49200BB22D7 /* RNBrainwave */,
-				11FA5C521C4A1296003AC2EE /* Products */,
-				BF76EF0E1E53070C00BB22D7 /* Frameworks */,
-			);
-			sourceTree = "<group>";
-		};
-		11FA5C521C4A1296003AC2EE /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				11FA5C511C4A1296003AC2EE /* libRNBrainwave.a */,
+				134814201AA4EA6300B7C361 /* libRNBrainwave.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		BF76EF0A1E52F49200BB22D7 /* RNBrainwave */ = {
+		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				BF76EF171E54152800BB22D7 /* TGSEEGPower.h */,
-				BF76EF181E54152800BB22D7 /* TGStream.h */,
-				BF76EF191E54152800BB22D7 /* TGStreamDelegate.h */,
-				BF76EF1A1E54152800BB22D7 /* TGStreamEnum.h */,
-				BF76EF0B1E52F49200BB22D7 /* RNBrainwave.h */,
-				BF76EF0C1E52F4C100BB22D7 /* RNBrainwave.m */,
+				BF2BD0A31E551420008C679A /* AlgoSdk.framework */,
+				BF2BD0A41E551420008C679A /* RNBrainwave */,
+				BF2BD0DC1E555026008C679A /* Libraries */,
+				134814211AA4EA7D00B7C361 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		BF20F6911E56DB9B00BE3184 /* COMM_SDK */ = {
+			isa = PBXGroup;
+			children = (
+				BF2BD0AB1E551420008C679A /* StreamSDK.a */,
+				BF2BD0A71E551420008C679A /* TGSEEGPower.h */,
+				BF2BD0A81E551420008C679A /* TGStream.h */,
+				BF2BD0A91E551420008C679A /* TGStreamDelegate.h */,
+				BF2BD0AA1E551420008C679A /* TGStreamEnum.h */,
+			);
+			name = COMM_SDK;
+			sourceTree = "<group>";
+		};
+		BF2BD0A41E551420008C679A /* RNBrainwave */ = {
+			isa = PBXGroup;
+			children = (
+				BF20F69F1E56E7D600BE3184 /* canned_data.c */,
+				BF20F6911E56DB9B00BE3184 /* COMM_SDK */,
+				BF2BD0A51E551420008C679A /* RNBrainwave.h */,
+				BF2BD0A61E551420008C679A /* RNBrainwave.m */,
 			);
 			path = RNBrainwave;
 			sourceTree = "<group>";
 		};
-		BF76EF0E1E53070C00BB22D7 /* Frameworks */ = {
+		BF2BD0DC1E555026008C679A /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				BF76EF0F1E53070C00BB22D7 /* AlgoSdk.framework */,
+				BF2BD0DD1E555042008C679A /* React.xcodeproj */,
 			);
-			name = Frameworks;
+			name = Libraries;
+			sourceTree = "<group>";
+		};
+		BF2BD0DE1E555042008C679A /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BF2BD0E91E555043008C679A /* libReact.a */,
+				BF2BD0EB1E555043008C679A /* libReact.a */,
+				BF2BD0ED1E555043008C679A /* libyoga.a */,
+				BF2BD0EF1E555043008C679A /* libyoga.a */,
+				BF2BD0F11E555043008C679A /* libcxxreact.a */,
+				BF2BD0F31E555043008C679A /* libcxxreact.a */,
+				BF2BD0F51E555043008C679A /* libjschelpers.a */,
+				BF2BD0F71E555043008C679A /* libjschelpers.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		11FA5C501C4A1296003AC2EE /* RNBrainwave */ = {
+		58B511DA1A9E6C8500147676 /* RNBrainwave */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 11FA5C5A1C4A1296003AC2EE /* Build configuration list for PBXNativeTarget "RNBrainwave" */;
+			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RNBrainwave" */;
 			buildPhases = (
-				11FA5C4D1C4A1296003AC2EE /* Sources */,
-				11FA5C4E1C4A1296003AC2EE /* Frameworks */,
-				11FA5C4F1C4A1296003AC2EE /* CopyFiles */,
+				58B511D71A9E6C8500147676 /* Sources */,
+				58B511D81A9E6C8500147676 /* Frameworks */,
+				58B511D91A9E6C8500147676 /* Copy Files */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = RNBrainwave;
-			productName = AirMaps;
-			productReference = 11FA5C511C4A1296003AC2EE /* libRNBrainwave.a */;
+			productName = RCTDataManager;
+			productReference = 134814201AA4EA6300B7C361 /* libRNBrainwave.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		11FA5C491C4A1296003AC2EE /* Project object */ = {
+		58B511D31A9E6C8500147676 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0720;
-				ORGANIZATIONNAME = Christopher;
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
-					11FA5C501C4A1296003AC2EE = {
-						CreatedOnToolsVersion = 7.2;
+					58B511DA1A9E6C8500147676 = {
+						CreatedOnToolsVersion = 6.1.1;
 					};
 				};
 			};
-			buildConfigurationList = 11FA5C4C1C4A1296003AC2EE /* Build configuration list for PBXProject "RNBrainwave" */;
+			buildConfigurationList = 58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RNBrainwave" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 11FA5C481C4A1296003AC2EE;
-			productRefGroup = 11FA5C521C4A1296003AC2EE /* Products */;
+			mainGroup = 58B511D21A9E6C8500147676;
+			productRefGroup = 58B511D21A9E6C8500147676;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = BF2BD0DE1E555042008C679A /* Products */;
+					ProjectRef = BF2BD0DD1E555042008C679A /* React.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
-				11FA5C501C4A1296003AC2EE /* RNBrainwave */,
+				58B511DA1A9E6C8500147676 /* RNBrainwave */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		BF2BD0E91E555043008C679A /* libReact.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libReact.a;
+			remoteRef = BF2BD0E81E555043008C679A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BF2BD0EB1E555043008C679A /* libReact.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libReact.a;
+			remoteRef = BF2BD0EA1E555043008C679A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BF2BD0ED1E555043008C679A /* libyoga.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libyoga.a;
+			remoteRef = BF2BD0EC1E555043008C679A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BF2BD0EF1E555043008C679A /* libyoga.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libyoga.a;
+			remoteRef = BF2BD0EE1E555043008C679A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BF2BD0F11E555043008C679A /* libcxxreact.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libcxxreact.a;
+			remoteRef = BF2BD0F01E555043008C679A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BF2BD0F31E555043008C679A /* libcxxreact.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libcxxreact.a;
+			remoteRef = BF2BD0F21E555043008C679A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BF2BD0F51E555043008C679A /* libjschelpers.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjschelpers.a;
+			remoteRef = BF2BD0F41E555043008C679A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BF2BD0F71E555043008C679A /* libjschelpers.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libjschelpers.a;
+			remoteRef = BF2BD0F61E555043008C679A /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXSourcesBuildPhase section */
-		11FA5C4D1C4A1296003AC2EE /* Sources */ = {
+		58B511D71A9E6C8500147676 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF76EF0D1E52F4C100BB22D7 /* RNBrainwave.m in Sources */,
+				BF20F6A01E56E7D600BE3184 /* canned_data.c in Sources */,
+				BF2BD0AD1E551420008C679A /* RNBrainwave.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		11FA5C581C4A1296003AC2EE /* Debug */ = {
+		58B511ED1A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -164,13 +318,13 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -181,21 +335,21 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
-		11FA5C591C4A1296003AC2EE /* Release */ = {
+		58B511EE1A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -208,13 +362,13 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -225,15 +379,14 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		11FA5C5B1C4A1296003AC2EE /* Debug */ = {
+		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
@@ -241,21 +394,21 @@
 					"$(PROJECT_DIR)",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../../react-native/React/**",
-					"$(SRCROOT)/../../react-native/Libraries/Image",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../node_modules/react-native/React/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RNBrainwave;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
-		11FA5C5C1C4A1296003AC2EE /* Release */ = {
+		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
@@ -263,16 +416,16 @@
 					"$(PROJECT_DIR)",
 				);
 				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../../react-native/React/**",
-					"$(SRCROOT)/../../react-native/Libraries/Image",
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../node_modules/react-native/React/**",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = RNBrainwave;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
@@ -280,25 +433,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		11FA5C4C1C4A1296003AC2EE /* Build configuration list for PBXProject "RNBrainwave" */ = {
+		58B511D61A9E6C8500147676 /* Build configuration list for PBXProject "RNBrainwave" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				11FA5C581C4A1296003AC2EE /* Debug */,
-				11FA5C591C4A1296003AC2EE /* Release */,
+				58B511ED1A9E6C8500147676 /* Debug */,
+				58B511EE1A9E6C8500147676 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		11FA5C5A1C4A1296003AC2EE /* Build configuration list for PBXNativeTarget "RNBrainwave" */ = {
+		58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "RNBrainwave" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				11FA5C5B1C4A1296003AC2EE /* Debug */,
-				11FA5C5C1C4A1296003AC2EE /* Release */,
+				58B511F01A9E6C8500147676 /* Debug */,
+				58B511F11A9E6C8500147676 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 11FA5C491C4A1296003AC2EE /* Project object */;
+	rootObject = 58B511D31A9E6C8500147676 /* Project object */;
 }
