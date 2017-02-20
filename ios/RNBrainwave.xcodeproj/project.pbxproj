@@ -91,11 +91,11 @@
 		BF2BD0A31E551420008C679A /* AlgoSdk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AlgoSdk.framework; sourceTree = "<group>"; };
 		BF2BD0A51E551420008C679A /* RNBrainwave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBrainwave.h; sourceTree = "<group>"; };
 		BF2BD0A61E551420008C679A /* RNBrainwave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBrainwave.m; sourceTree = "<group>"; };
-		BF2BD0A71E551420008C679A /* TGSEEGPower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGSEEGPower.h; sourceTree = "<group>"; };
-		BF2BD0A81E551420008C679A /* TGStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStream.h; sourceTree = "<group>"; };
-		BF2BD0A91E551420008C679A /* TGStreamDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStreamDelegate.h; sourceTree = "<group>"; };
-		BF2BD0AA1E551420008C679A /* TGStreamEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TGStreamEnum.h; sourceTree = "<group>"; };
-		BF2BD0AB1E551420008C679A /* StreamSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = StreamSDK.a; path = ../StreamSDK.a; sourceTree = "<group>"; };
+		BF2BD0A71E551420008C679A /* TGSEEGPower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TGSEEGPower.h; path = RNBrainwave/TGSEEGPower.h; sourceTree = "<group>"; };
+		BF2BD0A81E551420008C679A /* TGStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TGStream.h; path = RNBrainwave/TGStream.h; sourceTree = "<group>"; };
+		BF2BD0A91E551420008C679A /* TGStreamDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TGStreamDelegate.h; path = RNBrainwave/TGStreamDelegate.h; sourceTree = "<group>"; };
+		BF2BD0AA1E551420008C679A /* TGStreamEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TGStreamEnum.h; path = RNBrainwave/TGStreamEnum.h; sourceTree = "<group>"; };
+		BF2BD0AB1E551420008C679A /* StreamSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = StreamSDK.a; sourceTree = "<group>"; };
 		BF2BD0DD1E555042008C679A /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -123,30 +123,17 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				BF2BD0A31E551420008C679A /* AlgoSdk.framework */,
+				BF916A2E1E5801070077C5A5 /* Frameworks */,
 				BF2BD0A41E551420008C679A /* RNBrainwave */,
 				BF2BD0DC1E555026008C679A /* Libraries */,
 				134814211AA4EA7D00B7C361 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		BF20F6911E56DB9B00BE3184 /* COMM_SDK */ = {
-			isa = PBXGroup;
-			children = (
-				BF2BD0AB1E551420008C679A /* StreamSDK.a */,
-				BF2BD0A71E551420008C679A /* TGSEEGPower.h */,
-				BF2BD0A81E551420008C679A /* TGStream.h */,
-				BF2BD0A91E551420008C679A /* TGStreamDelegate.h */,
-				BF2BD0AA1E551420008C679A /* TGStreamEnum.h */,
-			);
-			name = COMM_SDK;
-			sourceTree = "<group>";
-		};
 		BF2BD0A41E551420008C679A /* RNBrainwave */ = {
 			isa = PBXGroup;
 			children = (
 				BF20F69F1E56E7D600BE3184 /* canned_data.c */,
-				BF20F6911E56DB9B00BE3184 /* COMM_SDK */,
 				BF2BD0A51E551420008C679A /* RNBrainwave.h */,
 				BF2BD0A61E551420008C679A /* RNBrainwave.m */,
 			);
@@ -174,6 +161,19 @@
 				BF2BD0F71E555043008C679A /* libjschelpers.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BF916A2E1E5801070077C5A5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BF2BD0A31E551420008C679A /* AlgoSdk.framework */,
+				BF2BD0AB1E551420008C679A /* StreamSDK.a */,
+				BF2BD0A71E551420008C679A /* TGSEEGPower.h */,
+				BF2BD0A81E551420008C679A /* TGStream.h */,
+				BF2BD0A91E551420008C679A /* TGStreamDelegate.h */,
+				BF2BD0AA1E551420008C679A /* TGStreamEnum.h */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -207,6 +207,7 @@
 				TargetAttributes = {
 					58B511DA1A9E6C8500147676 = {
 						CreatedOnToolsVersion = 6.1.1;
+						LastSwiftMigration = 0820;
 					};
 				};
 			};
@@ -389,6 +390,7 @@
 		58B511F01A9E6C8500147676 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -398,6 +400,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -405,12 +408,16 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNBrainwave;
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "RNBrainwave/RNBrainwave-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
 		58B511F11A9E6C8500147676 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -420,6 +427,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 				);
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -427,6 +435,8 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNBrainwave;
 				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "RNBrainwave/RNBrainwave-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};

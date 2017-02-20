@@ -6,6 +6,9 @@
 //
 #import "RNBrainwave.h"
 #import <React/RCTLog.h>
+#import <React/RCTBridge.h>
+#import <React/RCTEventDispatcher.h>
+
 #define X_RANGE     256
 // in simulator, canned data will be used instead.
 #if TARGET_IPHONE_SIMULATOR
@@ -24,6 +27,7 @@
 
 @implementation RNBrainwave
 
+@synthesize bridge = _bridge;
 
 BOOL bRunning;
 BOOL bPaused;
@@ -51,14 +55,6 @@ float f2[SAMPLE_COUNT];
 #endif
 int bp_index = 0;
 
-RCTResponseSenderBlock connectionStateCallback;
-
-RCT_EXPORT_MODULE()
-
-RCT_EXPORT_METHOD(setConnectionStateCallback:(RCTResponseSenderBlock)callback)
-{
-    //callback(@[[NSNull null], @([WXApi isWXAppInstalled])]);
-}
 
 #pragma mark
 #pragma NSK EEG SDK Delegate
@@ -168,6 +164,8 @@ RCT_EXPORT_METHOD(setConnectionStateCallback:(RCTResponseSenderBlock)callback)
             [signalStr appendString:@"Poor"];
             break;
     }
+
+    
     printf("%s", [signalStr UTF8String]);
     printf("\n");
 }
@@ -266,6 +264,40 @@ BOOL bBlink = NO;
     dispatch_sync(dispatch_get_main_queue(), ^{
         bBlink = YES;
     });
+}
+
+
+RCT_EXPORT_MODULE()
+
+
+
+- (NSDictionary *)constantsToExport
+{
+    return @{
+             @"CONNECTION_STATE": @"CONNECTION_STATE",
+             @"CONNECTION_ERROR": @"CONNECTION_ERROR",
+             @"SIGNAL_QUALITY": @"SIGNAL_QUALITY",
+             @"ATTENTION_ALGO_INDEX": @"ATTENTION_ALGO_INDEX",
+             @"MEDITATION_ALGO_INDEX": @"MEDITATION_ALGO_INDEX",
+             @"APPRECIATION_ALGO_INDEX": @"APPRECIATION_ALGO_INDEX",
+             @"MENTAL_EFFORT_ALGO_INDEX": @"MENTAL_EFFORT_ALGO_INDEX",
+             @"MENTAL_EFFORT2_ALGO_INDEX": @"MENTAL_EFFORT2_ALGO_INDEX",
+             @"FAMILIARITY_ALGO_INDEX": @"FAMILIARITY_ALGO_INDEX",
+             @"FAMILIARITY2_ALGO_INDEX": @"FAMILIARITY2_ALGO_INDEX",
+             
+             @"CONNECTION_STATE_CONNECTING": @"Monday",
+             @"CONNECTION_STATE_CONNECTED": @"Monday",
+             @"CONNECTION_STATE_WORKING": @"Monday",
+             @"CONNECTION_STATE_GET_DATA_TIMEOUT": @"Monday",
+             @"CONNECTION_STATE_STOPPED": @"Monday",
+             @"CONNECTION_STATE_DISCONNECTED": @"Monday",
+             @"CONNECTION_STATE_ERROR": @"Monday",
+             @"CONNECTION_STATE_FAILED": @"Monday",
+             @"SIGNAL_QUALITY_GOOD": @"0",
+             @"SIGNAL_QUALITY_MEDIUM": @"1",
+             @"SIGNAL_QUALITY_POOR": @"2",
+             @"SIGNAL_QUALITY_NOT_DETECTED": @"3",
+             };
 }
 
 

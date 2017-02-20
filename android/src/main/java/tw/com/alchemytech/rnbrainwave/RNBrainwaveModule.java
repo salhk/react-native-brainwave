@@ -3,15 +3,20 @@ package tw.com.alchemytech.rnbrainwave;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
 
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.neurosky.AlgoSdk.NskAlgoDataType;
 import com.neurosky.AlgoSdk.NskAlgoSdk;
 import com.neurosky.AlgoSdk.NskAlgoSignalQuality;
@@ -47,31 +52,33 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
 
     // canned data variables
     private short raw_data[] = {0};
-    private int raw_data_index= 0;
+    private int raw_data_index = 0;
     private int me_index = 0;
     private int ap_index = 0;
     private int f_index = 0;
     private int raw_data_sec_len = 112;
     private NskAlgoSdk nskAlgoSdk;
-    private Context context;
-    private Callback connectionStateCallback;
-    private Callback signalQualityCallback;
-    private Callback attentionAlgoCallback;
-    private Callback meditationAlgoCallback;
-    private Callback appretiationAlgoCallback;
-    private Callback mentalEffortAlgoCallback;
-    private Callback mentalEffort2AlgoCallback;
-    private Callback familiarityAlgoCallback;
-    private Callback familiarity2AlgoCallback;
+    private ReactContext context;
 
-    private static final String CONNECTION_STATE_CONNECTING = "CONNECTING";
-    private static final String CONNECTION_STATE_CONNECTED = "CONNECTED";
-    private static final String CONNECTION_STATE_WORKING = "WORKING";
-    private static final String CONNECTION_STATE_GET_DATA_TIMEOUT = "TIMEOUT";
-    private static final String CONNECTION_STATE_STOPPED = "STOPPED";
-    private static final String CONNECTION_STATE_DISCONNECTED = "DISCONNECTED";
-    private static final String CONNECTION_STATE_ERROR = "ERROR";
-    private static final String CONNECTION_STATE_FAILED = "FAILED";
+    private static final String CONNECTION_STATE = "CONNECTION_STATE";
+    private static final String CONNECTION_ERROR = "CONNECTION_ERROR";
+    private static final String SIGNAL_QUALITY = "SIGNAL_QUALITY";
+    private static final String ATTENTION_ALGO_INDEX = "ATTENTION_ALGO_INDEX";
+    private static final String MEDITATION_ALGO_INDEX = "MEDITATION_ALGO_INDEX";
+    private static final String APPRECIATION_ALGO_INDEX = "APPRECIATION_ALGO_INDEX";
+    private static final String MENTAL_EFFORT_ALGO_INDEX = "MENTAL_EFFORT_ALGO_INDEX";
+    private static final String MENTAL_EFFORT2_ALGO_INDEX = "MENTAL_EFFORT2_ALGO_INDEX";
+    private static final String FAMILIARITY_ALGO_INDEX = "FAMILIARITY_ALGO_INDEX";
+    private static final String FAMILIARITY2_ALGO_INDEX = "FAMILIARITY2_ALGO_INDEX";
+
+    private static final String CONNECTION_STATE_CONNECTING = "CONNECTION_STATE_CONNECTING";
+    private static final String CONNECTION_STATE_CONNECTED = "CONNECTION_STATE_CONNECTED";
+    private static final String CONNECTION_STATE_WORKING = "CONNECTION_STATE_WORKING";
+    private static final String CONNECTION_STATE_GET_DATA_TIMEOUT = "CONNECTION_STATE_GET_DATA_TIMEOUT";
+    private static final String CONNECTION_STATE_STOPPED = "CONNECTION_STATE_STOPPED";
+    private static final String CONNECTION_STATE_DISCONNECTED = "CONNECTION_STATE_DISCONNECTED";
+    private static final String CONNECTION_STATE_ERROR = "CONNECTION_STATE_ERROR";
+    private static final String CONNECTION_STATE_FAILED = "CONNECTION_STATE_FAILED";
 
 
     public RNBrainwaveModule(ReactApplicationContext reactContext) {
@@ -130,9 +137,9 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
         nskAlgoSdk.setOnSignalQualityListener(new NskAlgoSdk.OnSignalQualityListener() {
             @Override
             public void onSignalQuality(final int level) {
-                if (signalQualityCallback != null) {
-                    signalQualityCallback.invoke(NskAlgoSignalQuality.values()[level]);
-                }
+                WritableMap event = Arguments.createMap();
+                event.putInt("level", level);
+                sendEvent(context, SIGNAL_QUALITY, event);
             }
         });
 
@@ -141,9 +148,9 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             public void onAPAlgoIndex(float value) {
                 Log.d(TAG, "NskAlgoAPAlgoIndexListener: AP: " + value);
                 final float fValue = value;
-                if (appretiationAlgoCallback != null) {
-                    appretiationAlgoCallback.invoke(fValue);
-                }
+                WritableMap event = Arguments.createMap();
+                event.putDouble("value", value);
+                sendEvent(context, APPRECIATION_ALGO_INDEX, event);
             }
         });
 
@@ -151,9 +158,12 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onMEAlgoIndex(final float abs_me, final float diff_me, float max_me, float min_me) {
                 Log.d(TAG, "NskAlgoMEAlgoIndexListener: ME: abs:" + abs_me + ", diff:" + diff_me + "[" + min_me + ":" + max_me + "]");
-                if (mentalEffortAlgoCallback != null) {
-                    mentalEffortAlgoCallback.invoke(abs_me, diff_me, max_me, min_me);
-                }
+                WritableMap event = Arguments.createMap();
+                event.putDouble("abs_me", abs_me);
+                event.putDouble("diff_me", diff_me);
+                event.putDouble("max_me", max_me);
+                event.putDouble("min_me", min_me);
+                sendEvent(context, MENTAL_EFFORT_ALGO_INDEX, event);
                 me_index++;
             }
         });
@@ -162,9 +172,12 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onME2AlgoIndex(float total_me, float me_rate, float changing_rate) {
                 Log.d(TAG, "NskAlgoME2AlgoIndexListener: ME2: total:" + total_me + ", rate:" + me_rate + ", chg rate:" + changing_rate);
-                if (mentalEffort2AlgoCallback != null) {
-                    mentalEffort2AlgoCallback.invoke(total_me, me_rate, changing_rate);
-                }
+                WritableMap event = Arguments.createMap();
+                event.putDouble("total_me", total_me);
+                event.putDouble("me_rate", me_rate);
+                event.putDouble("changing_rate", changing_rate);
+                sendEvent(context, MENTAL_EFFORT2_ALGO_INDEX, event);
+
             }
         });
 
@@ -172,9 +185,12 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onFAlgoIndex(final float abs_f, final float diff_f, float max_f, float min_f) {
                 Log.d(TAG, "NskAlgoFAlgoIndexListener: F: abs:" + abs_f + ", diff:" + diff_f + "[" + min_f + ":" + max_f + "]");
-                if (familiarityAlgoCallback != null) {
-                    familiarityAlgoCallback.invoke(abs_f, diff_f, max_f, min_f);
-                }
+                WritableMap event = Arguments.createMap();
+                event.putDouble("abs_f", abs_f);
+                event.putDouble("diff_f", diff_f);
+                event.putDouble("max_f", max_f);
+                event.putDouble("min_f", min_f);
+                sendEvent(context, FAMILIARITY_ALGO_INDEX, event);
                 f_index++;
             }
         });
@@ -183,10 +199,10 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onF2AlgoIndex(final int progress_level, final float f_degree) {
                 Log.d(TAG, "NskAlgoAPAlgoIndexListener: F2: Level: " + progress_level + " Degree: " + f_degree);
-
-                if (familiarity2AlgoCallback != null) {
-                    familiarity2AlgoCallback.invoke(progress_level, f_degree);
-                }
+                WritableMap event = Arguments.createMap();
+                event.putInt("progress_level", progress_level);
+                event.putDouble("f_degree", f_degree);
+                sendEvent(context, FAMILIARITY2_ALGO_INDEX, event);
             }
         });
 
@@ -194,9 +210,9 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onAttAlgoIndex(int value) {
                 Log.d(TAG, "NskAlgoAttAlgoIndexListener: Attention:" + value);
-                if (attentionAlgoCallback != null) {
-                    attentionAlgoCallback.invoke(value);
-                }
+                WritableMap event = Arguments.createMap();
+                event.putInt("value", value);
+                sendEvent(context, ATTENTION_ALGO_INDEX, event);
             }
         });
 
@@ -204,12 +220,16 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onMedAlgoIndex(int value) {
                 Log.d(TAG, "NskAlgoAttAlgoIndexListener: Meditation:" + value);
-                if (meditationAlgoCallback != null) {
-                    meditationAlgoCallback.invoke(value);
-                }
+                WritableMap event = Arguments.createMap();
+                event.putInt("value", value);
+                sendEvent(context, MEDITATION_ALGO_INDEX, event);
             }
         });
 
+    }
+
+    private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
     }
 
     @Override
@@ -219,21 +239,20 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
 
 
     @ReactMethod
-    public void connect(Callback connectionStateCallback, Callback errorCallback) {
+    public void connect() {
         try {
             // (1) Make sure that the device supports Bluetooth and Bluetooth is on
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-                errorCallback.invoke("Please enable your Bluetooth");
+                sendEvent(context, CONNECTION_ERROR, null);
             }
             // Example of constructor public TgStreamReader(BluetoothAdapter ba, TgStreamHandler tgStreamHandler)
-            tgStreamReader = new TgStreamReader(mBluetoothAdapter,callback);
+            tgStreamReader = new TgStreamReader(mBluetoothAdapter, callback);
 
             raw_data = new short[512];
             raw_data_index = 0;
 
-            if(tgStreamReader != null) {
-                this.connectionStateCallback = connectionStateCallback;
+            if (tgStreamReader != null) {
                 if (tgStreamReader.isBTConnected()) {
                     // Prepare for connecting
                     tgStreamReader.stop();
@@ -245,7 +264,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             }
 
         } catch (Exception e) {
-            errorCallback.invoke(e.getMessage());
+            sendEvent(context, CONNECTION_ERROR, null);
 
             return;
         }
@@ -268,11 +287,13 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
     private TgStreamHandler callback = new TgStreamHandler() {
 
         @Override
-        public void onStatesChanged(int connectionStates) {
+        public void onStatesChanged(int connection_state) {
             // TODO Auto-generated method stub
-            Log.d(TAG, "connectionStates change to: " + connectionStates);
-            connectionStateCallback.invoke(connectionStates);
-            switch (connectionStates) {
+            Log.d(TAG, "connection_state change to: " + connection_state);
+            WritableMap event = Arguments.createMap();
+            event.putInt("connection_state", connection_state);
+            sendEvent(context, CONNECTION_STATE, event);
+            switch (connection_state) {
                 case ConnectionStates.STATE_CONNECTING:
                     // Do something when connecting
                     break;
@@ -288,7 +309,6 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                     //or you can add a button to control it.
                     //You can change the save path by calling setRecordStreamFilePath(String filePath) before startRecordRawData
                     //tgStreamReader.startRecordRawData();
-
 
 
                     break;
@@ -330,7 +350,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
         @Override
         public void onRecordFail(int flag) {
             // You can handle the record error message here
-            Log.e(TAG,"onRecordFail: " +flag);
+            Log.e(TAG, "onRecordFail: " + flag);
 
         }
 
@@ -346,19 +366,19 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             //Log.i(TAG,"onDataReceived");
             switch (datatype) {
                 case MindDataType.CODE_ATTENTION:
-                    short attValue[] = {(short)data};
+                    short attValue[] = {(short) data};
                     nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_ATT.value, attValue, 1);
                     break;
                 case MindDataType.CODE_MEDITATION:
-                    short medValue[] = {(short)data};
+                    short medValue[] = {(short) data};
                     nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_MED.value, medValue, 1);
                     break;
                 case MindDataType.CODE_POOR_SIGNAL:
-                    short pqValue[] = {(short)data};
+                    short pqValue[] = {(short) data};
                     nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_PQ.value, pqValue, 1);
                     break;
                 case MindDataType.CODE_RAW:
-                    raw_data[raw_data_index++] = (short)data;
+                    raw_data[raw_data_index++] = (short) data;
                     if (raw_data_index == 512) {
                         nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_EEG.value, raw_data, raw_data_index);
                         raw_data_index = 0;
@@ -370,51 +390,6 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
         }
 
     };
-
-    @ReactMethod
-    public void setConnectionStateCallback(Callback callback) {
-        this.connectionStateCallback = callback;
-    }
-
-    @ReactMethod
-    public void setSignalQualityCallback(Callback callback) {
-        this.signalQualityCallback = callback;
-    }
-
-    @ReactMethod
-    public void setAttentionAlgoCallback(Callback callback) {
-        this.attentionAlgoCallback = callback;
-    }
-
-    @ReactMethod
-    public void setMeditationAlgoCallback(Callback callback) {
-        this.meditationAlgoCallback = callback;
-    }
-
-    @ReactMethod
-    public void setAppretiationAlgoCallback(Callback callback) {
-        this.appretiationAlgoCallback = callback;
-    }
-
-    @ReactMethod
-    public void setMentalEffortAlgoCallback(Callback callback) {
-        this.mentalEffortAlgoCallback = callback;
-    }
-
-    @ReactMethod
-    public void setMentalEffort2AlgoCallback(Callback callback) {
-        this.mentalEffort2AlgoCallback = callback;
-    }
-
-    @ReactMethod
-    public void setFamiliarityAlgoCallback(Callback callback) {
-        this.familiarityAlgoCallback = callback;
-    }
-
-    @ReactMethod
-    public void setFamiliarity2AlgoCallback(Callback callback) {
-        this.familiarity2AlgoCallback = callback;
-    }
 
 
 
