@@ -272,6 +272,17 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
     @Override
     public Map<String, Object> getConstants() {
         final Map<String, Object> constants = new HashMap<>();
+        constants.put(CONNECTION_STATE, CONNECTION_STATE);
+        constants.put(CONNECTION_ERROR, CONNECTION_ERROR);
+        constants.put(SIGNAL_QUALITY, SIGNAL_QUALITY);
+        constants.put(ATTENTION_ALGO_INDEX, ATTENTION_ALGO_INDEX);
+        constants.put(MEDITATION_ALGO_INDEX, MEDITATION_ALGO_INDEX);
+        constants.put(APPRECIATION_ALGO_INDEX, APPRECIATION_ALGO_INDEX);
+        constants.put(MENTAL_EFFORT_ALGO_INDEX, MENTAL_EFFORT_ALGO_INDEX);
+        constants.put(MENTAL_EFFORT2_ALGO_INDEX, MENTAL_EFFORT2_ALGO_INDEX);
+        constants.put(FAMILIARITY_ALGO_INDEX, FAMILIARITY_ALGO_INDEX);
+        constants.put(FAMILIARITY2_ALGO_INDEX, FAMILIARITY2_ALGO_INDEX);
+
         constants.put(CONNECTION_STATE_CONNECTING, ConnectionStates.STATE_CONNECTING);
         constants.put(CONNECTION_STATE_CONNECTED, ConnectionStates.STATE_CONNECTED);
         constants.put(CONNECTION_STATE_WORKING, ConnectionStates.STATE_WORKING);
