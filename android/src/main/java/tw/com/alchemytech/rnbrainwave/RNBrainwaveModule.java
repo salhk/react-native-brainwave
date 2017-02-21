@@ -237,7 +237,6 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
         return "RNBrainwave";
     }
 
-
     @ReactMethod
     public void connect() {
         try {
