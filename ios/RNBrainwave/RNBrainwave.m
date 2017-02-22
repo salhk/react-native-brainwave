@@ -55,6 +55,28 @@ float f2[SAMPLE_COUNT];
 #endif
 int bp_index = 0;
 
+NSString *const CONNECTION_STATE = @"CONNECTION_STATE";
+NSString *const CONNECTION_ERROR = @"CONNECTION_ERROR";
+NSString *const SIGNAL_QUALITY = @"SIGNAL_QUALITY";
+NSString *const ATTENTION_ALGO_INDEX = @"ATTENTION_ALGO_INDEX";
+NSString *const MEDITATION_ALGO_INDEX = @"MEDITATION_ALGO_INDEX";
+NSString *const APPRECIATION_ALGO_INDEX = @"APPRECIATION_ALGO_INDEX";
+NSString *const MENTAL_EFFORT_ALGO_INDEX = @"MENTAL_EFFORT_ALGO_INDEX";
+NSString *const MENTAL_EFFORT2_ALGO_INDEX = @"MENTAL_EFFORT2_ALGO_INDEX";
+NSString *const FAMILIARITY_ALGO_INDEX = @"FAMILIARITY_ALGO_INDEX";
+NSString *const FAMILIARITY2_ALGO_INDEX = @"FAMILIARITY2_ALGO_INDEX";
+
+
+
+- (instancetype)init {
+#ifdef IOS_DEVICE
+    // we use real mindwave headset on iOS device
+    [[TGStream sharedInstance] setDelegate:self];
+#else
+    // we use canned data for simulator
+#endif
+    return self;
+}
 
 #pragma mark
 #pragma NSK EEG SDK Delegate
@@ -150,21 +172,29 @@ int bp_index = 0;
     }
     [signalStr setString:@""];
     [signalStr appendString:@"Signal quailty: "];
+    int level = 0;
     switch (signalQuality) {
         case NskAlgoSignalQualityGood:
             [signalStr appendString:@"Good"];
+            level = 0;
             break;
         case NskAlgoSignalQualityMedium:
             [signalStr appendString:@"Medium"];
+            level = 1;
             break;
         case NskAlgoSignalQualityNotDetected:
             [signalStr appendString:@"Not detected"];
+            level = 2;
             break;
         case NskAlgoSignalQualityPoor:
             [signalStr appendString:@"Poor"];
+            level = 3;
             break;
     }
-
+    [self.bridge.eventDispatcher sendAppEventWithName:@"EventReminder"
+                                                 body:@{@"level": @(level)}];
+    
+    
     
     printf("%s", [signalStr UTF8String]);
     printf("\n");
@@ -190,6 +220,9 @@ int bp_index = 0;
     ap_index++;
     
     //    [self addValue:value array:[algoList[SegmentAppreciation] getIndex:0]];
+    [self.bridge.eventDispatcher sendAppEventWithName:APPRECIATION_ALGO_INDEX
+                                                 body:@{@"value": value}];
+    
 }
 
 - (void)meAlgoIndex:(NSNumber *)abs_me diff_me:(NSNumber *)diff_me max_me:(NSNumber *)max_me min_me:(NSNumber *)min_me {
@@ -203,6 +236,14 @@ int bp_index = 0;
     me_index++;
     //    [self addValue:abs_me array:[algoList[SegmentMentalEffort] getIndex:0]];
     //    [self addValue:diff_me array:[algoList[SegmentMentalEffort] getIndex:1]];
+    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
+                                                 body:@{
+                                                        @"abs_me": abs_me,
+                                                        @"diff_me": diff_me,
+                                                        @"max_me": max_me,
+                                                        @"min_me": min_me
+                                                        }];
+    
 }
 
 - (void) me2AlgoIndex: (NSNumber*)total_me me_rate:(NSNumber*)me_rate changing_rate:(NSNumber*)changing_rate {
@@ -215,6 +256,13 @@ int bp_index = 0;
     });
     
     me2_index++;
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
+                                                 body:@{
+                                                        @"total_me": total_me,
+                                                        @"me_rate": me_rate,
+                                                        @"changing_rate": changing_rate
+                                                        }];
 }
 
 - (void)fAlgoIndex:(NSNumber *)abs_f diff_f:(NSNumber *)diff_f max_f:(NSNumber *)max_f min_f:(NSNumber *)min_f {
@@ -227,10 +275,18 @@ int bp_index = 0;
     f_index++;
     //    [self addValue:abs_f array:[algoList[SegmentFamiliarity] getIndex:0]];
     //    [self addValue:diff_f array:[algoList[SegmentFamiliarity] getIndex:1]];
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
+                                                 body:@{
+                                                        @"abs_f": abs_f,
+                                                        @"diff_f": diff_f,
+                                                        @"min_f": min_f,
+                                                        @"max_f": max_f
+                                                        }];
 }
 
-- (void)f2AlgoIndex:(NSNumber *)progress f_degree:(NSNumber *)f_degree {
-    NSLog(@"f2[%d] = %d, %1.15f", f2_index, [progress intValue], [f_degree floatValue]);
+- (void)f2AlgoIndex:(NSNumber *)progress_level f_degree:(NSNumber *)f_degree {
+    NSLog(@"f2[%d] = %d, %1.15f", f2_index, [progress_level intValue], [f_degree floatValue]);
     
     dispatch_sync(dispatch_get_main_queue(), ^{
         NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
@@ -238,25 +294,34 @@ int bp_index = 0;
         
     });
     f2_index++;
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
+                                                 body:@{
+                                                        @"progress_level": progress_level,
+                                                        @"f_degree": f_degree
+                                                        }];
 }
 
-- (void)medAlgoIndex:(NSNumber *)med_index {
-    //NSLog(@"Meditation: %f", [value floatValue]);
-    lMeditation = [med_index floatValue];
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        //        [_medLevelIndicator setProgress:(lMeditation/100.0f)];
-        //        [_medValue setText:[NSString stringWithFormat:@"%3.0f", lMeditation]];
-    });
+- (void)attAlgoIndex:(NSNumber *)value {
+    NSLog(@"Attention: %f", [value floatValue]);
+    lAttention = [value floatValue];
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
+                                                 body:@{
+                                                        @"value": value
+                                                        }];
 }
 
-- (void)attAlgoIndex:(NSNumber *)att_index {
-    //NSLog(@"Attention: %f", [value floatValue]);
-    lAttention = [att_index floatValue];
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        //        [_attLevelIndicator setProgress:(lAttention/100.0f)];
-        //        [_attValue setText:[NSString stringWithFormat:@"%3.0f", lAttention]];
-    });
+- (void)medAlgoIndex:(NSNumber *)value {
+    NSLog(@"Meditation: %f", [value floatValue]);
+    lMeditation = [value floatValue];
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
+                                                 body:@{
+                                                        @"value": value
+                                                        }];
 }
+
 
 BOOL bBlink = NO;
 - (void)eyeBlinkDetect:(NSNumber *)strength {
@@ -266,9 +331,183 @@ BOOL bBlink = NO;
     });
 }
 
+#ifdef IOS_DEVICE
+
+static long long current_timestamp() {
+    struct timeval te;
+    gettimeofday(&te, NULL);
+    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
+    return milliseconds;
+}
+
+int rawCount = 0;
+
+#pragma mark
+#pragma COMM SDK Delegate
+-(void)onDataReceived:(NSInteger)datatype data:(int)data obj:(NSObject *)obj deviceType:(DEVICE_TYPE)deviceType {
+    if (deviceType != DEVICE_TYPE_MindWaveMobile) {
+        return;
+    }
+    switch (datatype) {
+            
+        case MindDataType_CODE_POOR_SIGNAL:
+            //NSLog(@"%@ POOR_SIGNAL %d\n",[self NowString], data);
+        {
+            long long timestamp = current_timestamp();
+            static long long ltimestamp = 0;
+            printf("PQ,%lld,%lld,%d\n", timestamp%100000, timestamp - ltimestamp, rawCount);
+            ltimestamp = timestamp;
+            rawCount = 0;
+        }
+        {
+            int16_t poor_signal[1];
+            poor_signal[0] = (int16_t)data;
+            [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypePQ data:poor_signal length:1];
+        }
+            break;
+            
+        case MindDataType_CODE_RAW:
+            rawCount++;
+            //[self addValue:@(data) array:self->eegIndex];
+            if (bRunning == FALSE) {
+                return;
+            }
+        {
+            int16_t eeg_data[1];
+            eeg_data[0] = (int16_t)data;
+            [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeEEG data:eeg_data length:1];
+        }
+            //NSLog(@"%@\n CODE_RAW %d\n",[self NowString],data);
+            break;
+            
+        case MindDataType_CODE_ATTENTION:
+        {
+            int16_t attention[1];
+            attention[0] = (int16_t)data;
+            [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeAtt data:attention length:1];
+        }
+            //NSLog(@"%@\n CODE_ATTENTION %d\n",[self NowString],data);
+            break;
+            
+        case MindDataType_CODE_MEDITATION:
+        {
+            int16_t meditation[1];
+            meditation[0] = (int16_t)data;
+            [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeMed data:meditation length:1];
+        }
+            //NSLog(@"%@\n CODE_MEDITATION %d\n",[self NowString],data);
+            break;
+            
+        case MindDataType_CODE_EEGPOWER:
+            //NSLog(@"%@\n CODE_EEGPOWER %d\n",[self NowString],data);
+            break;
+            
+        case BodyDataType_CODE_HEARTRATE:
+            //NSLog(@"%@\n CODE_CONFIGURATION %d\n",[self NowString],data);
+            break;
+            
+        default:
+            //NSLog(@"%@\n NO defined data type %ld %d\n",[self NowString],(long)datatype,data);
+            break;
+    }
+}
+
+static NSUInteger checkSum=0;
+bool bTGStreamInited = false;
+
+-(void) onChecksumFail:(Byte *)payload length:(NSUInteger)length checksum:(NSInteger)checksum{
+    checkSum++;
+    NSLog(@"%@\n Check sum Fail:%lu\n",[self NowString],(unsigned long)checkSum);
+    NSLog(@"CheckSum lentgh:%lu  CheckSum:%lu",(unsigned long)length,(unsigned long)checksum);
+}
+
+static ConnectionStates lastConnectionState = -1;
+-(void)onStatesChanged:(ConnectionStates)connectionState{
+    //NSLog(@"%@\n Connection States:%lu\n",[self NowString],(unsigned long)connectionState);
+    if (lastConnectionState == connectionState) {
+        return;
+    }
+    lastConnectionState = connectionState;
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:CONNECTION_STATE
+                                                 body:@{@"connection_state": @(lastConnectionState)}];
+    
+    switch (connectionState) {
+        case STATE_COMPLETE:
+            NSLog(@"TGStream: complete");
+            break;
+        case STATE_CONNECTED:
+            NSLog(@"TGStream: connected");
+            if (bTGStreamInited == false) {
+                [[TGStream sharedInstance] initConnectWithAccessorySession];
+                bTGStreamInited = true;
+            }
+            break;
+        case STATE_CONNECTING:
+            NSLog(@"TGStream: connecting");
+            break;
+        case STATE_DISCONNECTED:
+            NSLog(@"TGStream: disconnected");
+            if (bTGStreamInited == true) {
+                [[TGStream sharedInstance] tearDownAccessorySession];
+                bTGStreamInited= false;
+            }
+            break;
+        case STATE_ERROR:
+            NSLog(@"TGStream: error");
+            break;
+        case STATE_FAILED:
+            NSLog(@"TGStream: failed");
+            break;
+        case STATE_INIT:
+            NSLog(@"TGStream: init");
+            break;
+        case STATE_RECORDING_END:
+            NSLog(@"TGStream: record end");
+            break;
+        case STATE_RECORDING_START:
+            NSLog(@"TGStream: record start");
+            break;
+        case STATE_STOPPED:
+            NSLog(@"TGStream: stopped");
+            break;
+        case STATE_WORKING:
+            NSLog(@"TGStream: working");
+            break;
+    }
+}
+
+-(NSString *) NowString{
+    
+    NSDate *date=[NSDate date];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    
+    return [dateFormatter stringFromDate:date];
+}
+
+-(void) onRecordFail:(RecrodError)flag{
+    NSLog(@"%@\n Record Fail:%lu\n",[self NowString],(unsigned long)flag);
+}
+#endif
+
+
 
 RCT_EXPORT_MODULE()
 
+RCT_EXPORT_METHOD(connect)
+{
+#ifdef IOS_DEVICE
+    // we use real mindwave headset on iOS device
+    [[TGStream sharedInstance] initConnectWithAccessorySession];
+    NskAlgoSdk *handle = [NskAlgoSdk sharedInstance];
+    handle.delegate = self;
+#else
+    // we use canned data for simulator
+#endif
+    
+}
 
 
 - (NSDictionary *)constantsToExport
@@ -285,18 +524,18 @@ RCT_EXPORT_MODULE()
              @"FAMILIARITY_ALGO_INDEX": @"FAMILIARITY_ALGO_INDEX",
              @"FAMILIARITY2_ALGO_INDEX": @"FAMILIARITY2_ALGO_INDEX",
              
-             @"CONNECTION_STATE_CONNECTING": @"Monday",
-             @"CONNECTION_STATE_CONNECTED": @"Monday",
-             @"CONNECTION_STATE_WORKING": @"Monday",
-             @"CONNECTION_STATE_GET_DATA_TIMEOUT": @"Monday",
-             @"CONNECTION_STATE_STOPPED": @"Monday",
-             @"CONNECTION_STATE_DISCONNECTED": @"Monday",
-             @"CONNECTION_STATE_ERROR": @"Monday",
-             @"CONNECTION_STATE_FAILED": @"Monday",
-             @"SIGNAL_QUALITY_GOOD": @"0",
-             @"SIGNAL_QUALITY_MEDIUM": @"1",
-             @"SIGNAL_QUALITY_POOR": @"2",
-             @"SIGNAL_QUALITY_NOT_DETECTED": @"3",
+             @"CONNECTION_STATE_CONNECTING": @(STATE_CONNECTING),
+             @"CONNECTION_STATE_CONNECTED": @(STATE_CONNECTED),
+             @"CONNECTION_STATE_WORKING": @(STATE_WORKING),
+             @"CONNECTION_STATE_GET_DATA_TIMEOUT": @(STATE_ERROR),
+             @"CONNECTION_STATE_STOPPED": @(STATE_STOPPED),
+             @"CONNECTION_STATE_DISCONNECTED": @(STATE_DISCONNECTED),
+             @"CONNECTION_STATE_ERROR": @(STATE_ERROR),
+             @"CONNECTION_STATE_FAILED": @(STATE_FAILED),
+             @"SIGNAL_QUALITY_GOOD": @(0),
+             @"SIGNAL_QUALITY_MEDIUM": @(1),
+             @"SIGNAL_QUALITY_POOR": @(2),
+             @"SIGNAL_QUALITY_NOT_DETECTED": @(3),
              };
 }
 
