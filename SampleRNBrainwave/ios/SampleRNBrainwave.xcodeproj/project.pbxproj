@@ -36,6 +36,9 @@
 		2DCD954D1E0B4F2C00145EB5 /* SampleRNBrainwaveTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* SampleRNBrainwaveTests.m */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		BF2C75D11E5D89DB0039D898 /* libRNBrainwave.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF80F0D71E5C930C00B1E09B /* libRNBrainwave.a */; };
+		BF4D161C1E5DC59F0019FE2F /* AlgoSdk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BF2C75EC1E5D8C2D0039D898 /* AlgoSdk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BF4D16211E5DCB310019FE2F /* AlgoSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2C75EC1E5D8C2D0039D898 /* AlgoSdk.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -237,6 +240,20 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		BF4D161D1E5DC59F0019FE2F /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BF4D161C1E5DC59F0019FE2F /* AlgoSdk.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = "../node_modules/react-native/Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj"; sourceTree = "<group>"; };
@@ -262,6 +279,7 @@
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		BF2C75EC1E5D8C2D0039D898 /* AlgoSdk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AlgoSdk.framework; path = ../../ios/AlgoSdk.framework; sourceTree = "<group>"; };
 		BF80F0B91E5C930C00B1E09B /* RNBrainwave.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNBrainwave.xcodeproj; path = ../../ios/RNBrainwave.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -278,6 +296,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF4D16211E5DCB310019FE2F /* AlgoSdk.framework in Frameworks */,
+				BF2C75D11E5D89DB0039D898 /* libRNBrainwave.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
@@ -476,6 +496,7 @@
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* SampleRNBrainwaveTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
+				BF2C75EB1E5D8C2D0039D898 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -490,6 +511,14 @@
 				2D02E4901E0B4A5D006451C7 /* SampleRNBrainwave-tvOSTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		BF2C75EB1E5D8C2D0039D898 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				BF2C75EC1E5D8C2D0039D898 /* AlgoSdk.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		BF80F0BA1E5C930C00B1E09B /* Products */ = {
@@ -529,6 +558,7 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				BF4D161D1E5DC59F0019FE2F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1030,12 +1060,19 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = YUHPTWDE6A;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(SRCROOT)/../../ios",
+				);
 				INFOPLIST_FILE = SampleRNBrainwave/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../ios";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
+					"-all_load",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tw.com.alchemytech.SampleRNBrainwave;
 				PRODUCT_NAME = SampleRNBrainwave;
@@ -1049,12 +1086,19 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = YUHPTWDE6A;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(SRCROOT)/../../ios",
+				);
 				INFOPLIST_FILE = SampleRNBrainwave/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../../ios";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
+					"-all_load",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = tw.com.alchemytech.SampleRNBrainwave;
 				PRODUCT_NAME = SampleRNBrainwave;

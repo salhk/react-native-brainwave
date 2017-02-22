@@ -50,6 +50,9 @@ export default class App extends Component {
     connectionStateChange(event) {
         var stateString = '';
         switch (event['connection_state']) {
+            case RNBrainwave.CONNECTION_STATE_INIT:
+                stateString = 'init';
+                break;
             case RNBrainwave.CONNECTION_STATE_CONNECTING:
                 stateString = 'connecting';
                 break;

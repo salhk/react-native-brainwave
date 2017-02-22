@@ -71,12 +71,16 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
     private static final String FAMILIARITY_ALGO_INDEX = "FAMILIARITY_ALGO_INDEX";
     private static final String FAMILIARITY2_ALGO_INDEX = "FAMILIARITY2_ALGO_INDEX";
 
+    private static final String CONNECTION_STATE_INIT = "CONNECTION_STATE_INIT";
     private static final String CONNECTION_STATE_CONNECTING = "CONNECTION_STATE_CONNECTING";
     private static final String CONNECTION_STATE_CONNECTED = "CONNECTION_STATE_CONNECTED";
     private static final String CONNECTION_STATE_WORKING = "CONNECTION_STATE_WORKING";
     private static final String CONNECTION_STATE_GET_DATA_TIMEOUT = "CONNECTION_STATE_GET_DATA_TIMEOUT";
     private static final String CONNECTION_STATE_STOPPED = "CONNECTION_STATE_STOPPED";
     private static final String CONNECTION_STATE_DISCONNECTED = "CONNECTION_STATE_DISCONNECTED";
+    private static final String CONNECTION_STATE_COMPLETE = "CONNECTION_STATE_COMPLETE";
+    private static final String CONNECTION_STATE_RECORDING_START = "CONNECTION_STATE_RECORDING_START";
+    private static final String CONNECTION_STATE_RECORDING_END = "CONNECTION_STATE_RECORDING_END";
     private static final String CONNECTION_STATE_ERROR = "CONNECTION_STATE_ERROR";
     private static final String CONNECTION_STATE_FAILED = "CONNECTION_STATE_FAILED";
 
@@ -283,12 +287,16 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
         constants.put(FAMILIARITY_ALGO_INDEX, FAMILIARITY_ALGO_INDEX);
         constants.put(FAMILIARITY2_ALGO_INDEX, FAMILIARITY2_ALGO_INDEX);
 
+        constants.put(CONNECTION_STATE_INIT, ConnectionStates.STATE_INIT);
         constants.put(CONNECTION_STATE_CONNECTING, ConnectionStates.STATE_CONNECTING);
         constants.put(CONNECTION_STATE_CONNECTED, ConnectionStates.STATE_CONNECTED);
         constants.put(CONNECTION_STATE_WORKING, ConnectionStates.STATE_WORKING);
         constants.put(CONNECTION_STATE_GET_DATA_TIMEOUT, ConnectionStates.STATE_GET_DATA_TIME_OUT);
         constants.put(CONNECTION_STATE_STOPPED, ConnectionStates.STATE_STOPPED);
         constants.put(CONNECTION_STATE_DISCONNECTED, ConnectionStates.STATE_DISCONNECTED);
+        constants.put(CONNECTION_STATE_COMPLETE, ConnectionStates.STATE_COMPLETE);
+        constants.put(CONNECTION_STATE_RECORDING_START, ConnectionStates.STATE_RECORDING_START);
+        constants.put(CONNECTION_STATE_RECORDING_END, ConnectionStates.STATE_RECORDING_END);
         constants.put(CONNECTION_STATE_ERROR, ConnectionStates.STATE_ERROR);
         constants.put(CONNECTION_STATE_FAILED, ConnectionStates.STATE_FAILED);
         return constants;

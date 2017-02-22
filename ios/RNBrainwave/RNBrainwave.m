@@ -424,9 +424,7 @@ bool bTGStreamInited = false;
 static ConnectionStates lastConnectionState = -1;
 -(void)onStatesChanged:(ConnectionStates)connectionState{
     //NSLog(@"%@\n Connection States:%lu\n",[self NowString],(unsigned long)connectionState);
-    if (lastConnectionState == connectionState) {
-        return;
-    }
+
     lastConnectionState = connectionState;
     
     [self.bridge.eventDispatcher sendAppEventWithName:CONNECTION_STATE
@@ -527,7 +525,7 @@ RCT_EXPORT_METHOD(connect)
              @"CONNECTION_STATE_CONNECTING": @(STATE_CONNECTING),
              @"CONNECTION_STATE_CONNECTED": @(STATE_CONNECTED),
              @"CONNECTION_STATE_WORKING": @(STATE_WORKING),
-             @"CONNECTION_STATE_GET_DATA_TIMEOUT": @(STATE_ERROR),
+             @"CONNECTION_STATE_GET_DATA_TIMEOUT": @(9),
              @"CONNECTION_STATE_STOPPED": @(STATE_STOPPED),
              @"CONNECTION_STATE_DISCONNECTED": @(STATE_DISCONNECTED),
              @"CONNECTION_STATE_ERROR": @(STATE_ERROR),

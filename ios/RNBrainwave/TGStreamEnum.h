@@ -72,6 +72,8 @@ typedef NS_ENUM(NSUInteger,ConnectionStates){
    
     STATE_RECORDING_END = 8,
     
+    STATE_GET_DATA_TIME_OUT = 9,
+    
     STATE_FAILED = 100,
     
     STATE_ERROR = 101
