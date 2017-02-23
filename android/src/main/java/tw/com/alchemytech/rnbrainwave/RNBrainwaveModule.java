@@ -232,22 +232,13 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
 
     }
 
-    private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
-        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
-    }
-
-    @Override
-    public String getName() {
-        return "RNBrainwave";
-    }
-
     @ReactMethod
     public void connect() {
         try {
             // (1) Make sure that the device supports Bluetooth and Bluetooth is on
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-                sendEvent(context, CONNECTION_ERROR, null);
+                sendEvent(context, CONNECTION_STATE_FAILED, null);
             }
             // Example of constructor public TgStreamReader(BluetoothAdapter ba, TgStreamHandler tgStreamHandler)
             tgStreamReader = new TgStreamReader(mBluetoothAdapter, callback);
@@ -266,6 +257,8 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                 tgStreamReader.connect();
             }
 
+            setAlgos();
+
         } catch (Exception e) {
             sendEvent(context, CONNECTION_ERROR, null);
 
@@ -273,33 +266,31 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
         }
     }
 
-    @Override
-    public Map<String, Object> getConstants() {
-        final Map<String, Object> constants = new HashMap<>();
-        constants.put(CONNECTION_STATE, CONNECTION_STATE);
-        constants.put(CONNECTION_ERROR, CONNECTION_ERROR);
-        constants.put(SIGNAL_QUALITY, SIGNAL_QUALITY);
-        constants.put(ATTENTION_ALGO_INDEX, ATTENTION_ALGO_INDEX);
-        constants.put(MEDITATION_ALGO_INDEX, MEDITATION_ALGO_INDEX);
-        constants.put(APPRECIATION_ALGO_INDEX, APPRECIATION_ALGO_INDEX);
-        constants.put(MENTAL_EFFORT_ALGO_INDEX, MENTAL_EFFORT_ALGO_INDEX);
-        constants.put(MENTAL_EFFORT2_ALGO_INDEX, MENTAL_EFFORT2_ALGO_INDEX);
-        constants.put(FAMILIARITY_ALGO_INDEX, FAMILIARITY_ALGO_INDEX);
-        constants.put(FAMILIARITY2_ALGO_INDEX, FAMILIARITY2_ALGO_INDEX);
+    private void setAlgos() {
+        int algoTypes = 0;
 
-        constants.put(CONNECTION_STATE_INIT, ConnectionStates.STATE_INIT);
-        constants.put(CONNECTION_STATE_CONNECTING, ConnectionStates.STATE_CONNECTING);
-        constants.put(CONNECTION_STATE_CONNECTED, ConnectionStates.STATE_CONNECTED);
-        constants.put(CONNECTION_STATE_WORKING, ConnectionStates.STATE_WORKING);
-        constants.put(CONNECTION_STATE_GET_DATA_TIMEOUT, ConnectionStates.STATE_GET_DATA_TIME_OUT);
-        constants.put(CONNECTION_STATE_STOPPED, ConnectionStates.STATE_STOPPED);
-        constants.put(CONNECTION_STATE_DISCONNECTED, ConnectionStates.STATE_DISCONNECTED);
-        constants.put(CONNECTION_STATE_COMPLETE, ConnectionStates.STATE_COMPLETE);
-        constants.put(CONNECTION_STATE_RECORDING_START, ConnectionStates.STATE_RECORDING_START);
-        constants.put(CONNECTION_STATE_RECORDING_END, ConnectionStates.STATE_RECORDING_END);
-        constants.put(CONNECTION_STATE_ERROR, ConnectionStates.STATE_ERROR);
-        constants.put(CONNECTION_STATE_FAILED, ConnectionStates.STATE_FAILED);
-        return constants;
+        algoTypes += NskAlgoType.NSK_ALGO_TYPE_AP.value;
+
+        algoTypes += NskAlgoType.NSK_ALGO_TYPE_ME.value;
+
+        algoTypes += NskAlgoType.NSK_ALGO_TYPE_ME2.value;
+
+        algoTypes += NskAlgoType.NSK_ALGO_TYPE_F.value;
+
+        algoTypes += NskAlgoType.NSK_ALGO_TYPE_F2.value;
+
+        algoTypes += NskAlgoType.NSK_ALGO_TYPE_MED.value;
+
+        algoTypes += NskAlgoType.NSK_ALGO_TYPE_ATT.value;
+
+        if (bInited) {
+            nskAlgoSdk.NskAlgoUninit();
+            bInited = false;
+        }
+        int ret = nskAlgoSdk.NskAlgoInit(algoTypes, context.getFilesDir().getAbsolutePath());
+        if (ret == 0) {
+            bInited = true;
+        }
     }
 
     private TgStreamHandler callback = new TgStreamHandler() {
@@ -318,6 +309,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                 case ConnectionStates.STATE_CONNECTED:
                     // Do something when connected
                     tgStreamReader.start();
+
                     //showToast("Connected", Toast.LENGTH_SHORT);
                     break;
                 case ConnectionStates.STATE_WORKING:
@@ -327,7 +319,6 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                     //or you can add a button to control it.
                     //You can change the save path by calling setRecordStreamFilePath(String filePath) before startRecordRawData
                     //tgStreamReader.startRecordRawData();
-
 
                     break;
                 case ConnectionStates.STATE_GET_DATA_TIME_OUT:
@@ -351,7 +342,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
 
                     break;
                 case ConnectionStates.STATE_DISCONNECTED:
-                    // Do something when disconnected
+                    nskAlgoSdk.NskAlgoStop();
                     break;
                 case ConnectionStates.STATE_ERROR:
                     // Do something when you get error message
@@ -394,8 +385,13 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                 case MindDataType.CODE_POOR_SIGNAL:
                     short pqValue[] = {(short) data};
                     nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_PQ.value, pqValue, 1);
+
                     break;
                 case MindDataType.CODE_RAW:
+                    if (bRunning == false) {
+                        nskAlgoSdk.NskAlgoStart(false);
+                        bRunning = true;
+                    }
                     raw_data[raw_data_index++] = (short) data;
                     if (raw_data_index == 512) {
                         nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_EEG.value, raw_data, raw_data_index);
@@ -409,6 +405,44 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
 
     };
 
+    @Override
+    public Map<String, Object> getConstants() {
+        final Map<String, Object> constants = new HashMap<>();
+        constants.put(CONNECTION_STATE, CONNECTION_STATE);
+        constants.put(CONNECTION_ERROR, CONNECTION_ERROR);
+        constants.put(SIGNAL_QUALITY, SIGNAL_QUALITY);
+        constants.put(ATTENTION_ALGO_INDEX, ATTENTION_ALGO_INDEX);
+        constants.put(MEDITATION_ALGO_INDEX, MEDITATION_ALGO_INDEX);
+        constants.put(APPRECIATION_ALGO_INDEX, APPRECIATION_ALGO_INDEX);
+        constants.put(MENTAL_EFFORT_ALGO_INDEX, MENTAL_EFFORT_ALGO_INDEX);
+        constants.put(MENTAL_EFFORT2_ALGO_INDEX, MENTAL_EFFORT2_ALGO_INDEX);
+        constants.put(FAMILIARITY_ALGO_INDEX, FAMILIARITY_ALGO_INDEX);
+        constants.put(FAMILIARITY2_ALGO_INDEX, FAMILIARITY2_ALGO_INDEX);
+
+        constants.put(CONNECTION_STATE_INIT, ConnectionStates.STATE_INIT);
+        constants.put(CONNECTION_STATE_CONNECTING, ConnectionStates.STATE_CONNECTING);
+        constants.put(CONNECTION_STATE_CONNECTED, ConnectionStates.STATE_CONNECTED);
+        constants.put(CONNECTION_STATE_WORKING, ConnectionStates.STATE_WORKING);
+        constants.put(CONNECTION_STATE_GET_DATA_TIMEOUT, ConnectionStates.STATE_GET_DATA_TIME_OUT);
+        constants.put(CONNECTION_STATE_STOPPED, ConnectionStates.STATE_STOPPED);
+        constants.put(CONNECTION_STATE_DISCONNECTED, ConnectionStates.STATE_DISCONNECTED);
+        constants.put(CONNECTION_STATE_COMPLETE, ConnectionStates.STATE_COMPLETE);
+        constants.put(CONNECTION_STATE_RECORDING_START, ConnectionStates.STATE_RECORDING_START);
+        constants.put(CONNECTION_STATE_RECORDING_END, ConnectionStates.STATE_RECORDING_END);
+        constants.put(CONNECTION_STATE_ERROR, ConnectionStates.STATE_ERROR);
+        constants.put(CONNECTION_STATE_FAILED, ConnectionStates.STATE_FAILED);
+        return constants;
+    }
+
+
+    @Override
+    public String getName() {
+        return "RNBrainwave";
+    }
+
+    private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+    }
 
 
 }

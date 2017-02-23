@@ -23,7 +23,8 @@ export default class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            connectionState: 'disconnected'
+            connectionState: 'disconnected',
+            connected: false
         };
     }
 
@@ -45,10 +46,16 @@ export default class App extends Component {
 
     componentWillMount() {
         DeviceEventEmitter.addListener(RNBrainwave.CONNECTION_STATE, this.connectionStateChange.bind(this));
+        DeviceEventEmitter.addListener(RNBrainwave.SIGNAL_QUALITY, this.signalQualityChange.bind(this));
+    }
+
+    connect() {
+        RNBrainwave.connect();
     }
 
     connectionStateChange(event) {
         var stateString = '';
+        var connected = false;
         switch (event['connection_state']) {
             case RNBrainwave.CONNECTION_STATE_INIT:
                 stateString = 'init';
@@ -58,9 +65,11 @@ export default class App extends Component {
                 break;
             case RNBrainwave.CONNECTION_STATE_CONNECTED:
                 stateString = 'connected';
+                connected = true;
                 break;
             case RNBrainwave.CONNECTION_STATE_WORKING:
                 stateString = 'working';
+                connected = true;
                 break;
             case RNBrainwave.CONNECTION_STATE_GET_DATA_TIMEOUT:
                 stateString = 'timeout';
@@ -78,18 +87,21 @@ export default class App extends Component {
                 stateString = 'failed to connect';
                 break;
             default:
-                stateString = 'disconnected';
+                stateString = event['connection_state'].toString();
                 break;
         }
 
         this.setState({
-            connectionState: stateString
+            connectionState: stateString,
+            connected: connected
         });
     }
 
-    connect() {
-        RNBrainwave.connect();
+    signalQualityChange(event) {
+        var signalQUality = event['level'];
     }
+
+    
 }
 
 const styles = StyleSheet.create({

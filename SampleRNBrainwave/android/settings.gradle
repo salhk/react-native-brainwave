@@ -1,4 +1,6 @@
 rootProject.name = 'SampleRNBrainwave'
+include ':react-native-svg'
+project(':react-native-svg').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-svg/android')
 include ':RNBrainwave'
 project(':RNBrainwave').projectDir = new File(settingsDir, '../../android')
 
