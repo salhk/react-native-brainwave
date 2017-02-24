@@ -84,12 +84,31 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
     private static final String CONNECTION_STATE_ERROR = "CONNECTION_STATE_ERROR";
     private static final String CONNECTION_STATE_FAILED = "CONNECTION_STATE_FAILED";
 
+    private static final String ALGO_STATE_BASELINE = "ALGO_STATE_BASELINE";
+    private static final String ALGO_STATE_RUNNING = "ALGO_STATE_RUNNING";
+    private static final String ALGO_STATE_STOP = "ALGO_STATE_STOP";
+    private static final String ALGO_STATE_PAUSE = "ALGO_STATE_PAUSE";
+    private static final String ALGO_STATE_ANALYZING_DATA = "ALGO_STATE_ANALYZING_DATA";
+
+
 
     public RNBrainwaveModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.context = reactContext;
 
         nskAlgoSdk = new NskAlgoSdk();
+
+        try {
+            // (1) Make sure that the device supports Bluetooth and Bluetooth is on
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
+                sendEvent(context, CONNECTION_STATE_FAILED, null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.i(TAG, "error:" + e.getMessage());
+            return;
+        }
 
         nskAlgoSdk.setOnStateChangeListener(new NskAlgoSdk.OnStateChangeListener() {
             @Override
@@ -235,16 +254,15 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void connect() {
         try {
-            // (1) Make sure that the device supports Bluetooth and Bluetooth is on
-            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-                sendEvent(context, CONNECTION_STATE_FAILED, null);
-            }
-            // Example of constructor public TgStreamReader(BluetoothAdapter ba, TgStreamHandler tgStreamHandler)
-            tgStreamReader = new TgStreamReader(mBluetoothAdapter, callback);
+            me_index = 0;
+            ap_index = 0;
+            f_index = 0;
 
             raw_data = new short[512];
             raw_data_index = 0;
+
+            // Example of constructor public TgStreamReader(BluetoothAdapter ba, TgStreamHandler tgStreamHandler)
+            tgStreamReader = new TgStreamReader(mBluetoothAdapter, callback);
 
             if (tgStreamReader != null) {
                 if (tgStreamReader.isBTConnected()) {
@@ -257,7 +275,6 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                 tgStreamReader.connect();
             }
 
-            setAlgos();
 
         } catch (Exception e) {
             sendEvent(context, CONNECTION_ERROR, null);
@@ -266,18 +283,19 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
         }
     }
 
-    private void setAlgos() {
+    @ReactMethod
+    public void setDefaultAlgos() {
         int algoTypes = 0;
 
-        algoTypes += NskAlgoType.NSK_ALGO_TYPE_AP.value;
+        //algoTypes += NskAlgoType.NSK_ALGO_TYPE_AP.value;
 
         algoTypes += NskAlgoType.NSK_ALGO_TYPE_ME.value;
 
-        algoTypes += NskAlgoType.NSK_ALGO_TYPE_ME2.value;
+        //algoTypes += NskAlgoType.NSK_ALGO_TYPE_ME2.value;
 
         algoTypes += NskAlgoType.NSK_ALGO_TYPE_F.value;
 
-        algoTypes += NskAlgoType.NSK_ALGO_TYPE_F2.value;
+        //algoTypes += NskAlgoType.NSK_ALGO_TYPE_F2.value;
 
         algoTypes += NskAlgoType.NSK_ALGO_TYPE_MED.value;
 
@@ -290,6 +308,23 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
         int ret = nskAlgoSdk.NskAlgoInit(algoTypes, context.getFilesDir().getAbsolutePath());
         if (ret == 0) {
             bInited = true;
+        }
+    }
+
+    @ReactMethod
+    public void setAlgos(int algoTypes) {
+        if (algoTypes == 0) {
+            Log.d(TAG, "Please select at least one algorithm");
+        }
+        else {
+            if (bInited) {
+                nskAlgoSdk.NskAlgoUninit();
+                bInited = false;
+            }
+            int ret = nskAlgoSdk.NskAlgoInit(algoTypes, context.getFilesDir().getAbsolutePath());
+            if (ret == 0) {
+                bInited = true;
+            }
         }
     }
 
@@ -375,19 +410,23 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             //Log.i(TAG,"onDataReceived");
             switch (datatype) {
                 case MindDataType.CODE_ATTENTION:
+                    Log.i(TAG,"DATA RECEIVED: ATTENTION");
                     short attValue[] = {(short) data};
                     nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_ATT.value, attValue, 1);
                     break;
                 case MindDataType.CODE_MEDITATION:
+                    Log.i(TAG,"DATA RECEIVED: MEDITATION");
                     short medValue[] = {(short) data};
                     nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_MED.value, medValue, 1);
                     break;
                 case MindDataType.CODE_POOR_SIGNAL:
+                    Log.i(TAG,"DATA RECEIVED: POOR_SIGNAL");
                     short pqValue[] = {(short) data};
                     nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_PQ.value, pqValue, 1);
 
                     break;
                 case MindDataType.CODE_RAW:
+                    Log.i(TAG,"DATA RECEIVED: RAW_DATA");
                     if (bRunning == false) {
                         nskAlgoSdk.NskAlgoStart(false);
                         bRunning = true;
@@ -431,6 +470,12 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
         constants.put(CONNECTION_STATE_RECORDING_END, ConnectionStates.STATE_RECORDING_END);
         constants.put(CONNECTION_STATE_ERROR, ConnectionStates.STATE_ERROR);
         constants.put(CONNECTION_STATE_FAILED, ConnectionStates.STATE_FAILED);
+
+        constants.put(ALGO_STATE_BASELINE, NskAlgoState.NSK_ALGO_STATE_COLLECTING_BASELINE_DATA.value);
+        constants.put(ALGO_STATE_RUNNING, NskAlgoState.NSK_ALGO_STATE_RUNNING.value);
+        constants.put(ALGO_STATE_STOP, NskAlgoState.NSK_ALGO_STATE_STOP.value);
+        constants.put(ALGO_STATE_PAUSE, NskAlgoState.NSK_ALGO_STATE_STOP.value);
+        constants.put(ALGO_STATE_ANALYZING_DATA, NskAlgoState.NSK_ALGO_STATE_ANALYSING_BULK_DATA.value);
         return constants;
     }
 

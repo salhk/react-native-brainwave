@@ -14,6 +14,10 @@ import {
     Alert,
     DeviceEventEmitter
 } from 'react-native';
+import {
+    VictoryLine
+} from 'victory-native';
+
 
 
 import RNBrainwave from 'react-native-brainwave';
@@ -24,7 +28,9 @@ export default class App extends Component {
         super(props);
         this.state = {
             connectionState: 'disconnected',
-            connected: false
+            connected: false,
+            signalQuality: '',
+            attention: []
         };
     }
 
@@ -33,13 +39,23 @@ export default class App extends Component {
         return (
             <View style={styles.container}>
                 <TouchableOpacity onPress={this.connect}>
-                    <Text style={styles.welcome}>
+                    <Text style={styles.button}>
                         Tap to connect
                     </Text>
                 </TouchableOpacity>
-                <Text style={styles.instructions}>
+                <Text>
                     {this.state.connectionState}
                 </Text>
+                <Text>
+                    {this.state.signalQuality}
+                </Text>
+                <VictoryLine
+                    data={this.state.attention}
+                    x="time"
+                    y="value"
+                />
+
+
             </View>
         );
     }
@@ -47,12 +63,14 @@ export default class App extends Component {
     componentWillMount() {
         DeviceEventEmitter.addListener(RNBrainwave.CONNECTION_STATE, this.connectionStateChange.bind(this));
         DeviceEventEmitter.addListener(RNBrainwave.SIGNAL_QUALITY, this.signalQualityChange.bind(this));
+        DeviceEventEmitter.addListener(RNBrainwave.ATTENTION_ALGO_INDEX, this.attentionIndexHandler.bind(this));
+        RNBrainwave.setDefaultAlgos();
     }
 
     connect() {
         RNBrainwave.connect();
     }
-
+    
     connectionStateChange(event) {
         var stateString = '';
         var connected = false;
@@ -98,10 +116,46 @@ export default class App extends Component {
     }
 
     signalQualityChange(event) {
-        var signalQUality = event['level'];
+        var signalQuality = event['level'];
+        var str = '';
+        switch (signalQuality) {
+            case 0:
+                str = 'good';
+                break;
+            case 1:
+                str = 'medium';
+                break;
+            case 2:
+                str = 'poor';
+                break;
+            case 3:
+                str = 'Not detected';
+                break;
+        }
+
+        this.setState({
+            signalQuality: str
+        });
     }
 
-    
+    attentionIndexHandler(event) {
+        var value = event['value'];
+        var index = 0;
+        var arr = this.state.attention;
+        if (this.state.attention.length > 0) {
+            index = arr[arr.length - 1].time + 1;
+        }
+        arr.push({
+            time: index,
+            value: value
+        });
+        this.setState({
+            attention: arr
+        });
+
+    }
+
+
 }
 
 const styles = StyleSheet.create({
@@ -109,18 +163,17 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        backgroundColor: 'white',
     },
-    welcome: {
+    button: {
         fontSize: 20,
         textAlign: 'center',
         margin: 10,
     },
-    instructions: {
-        textAlign: 'center',
-        color: '#333333',
-        marginBottom: 5,
-    },
+    chart: {
+        width: 200,
+        height: 200,
+    }
 });
 
 AppRegistry.registerComponent('SampleRNBrainwave', () => SampleRNBrainwave);
