@@ -3,6 +3,8 @@ package tw.com.alchemytech.rnbrainwave;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Button;
@@ -91,7 +93,6 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
     private static final String ALGO_STATE_ANALYZING_DATA = "ALGO_STATE_ANALYZING_DATA";
 
 
-
     public RNBrainwaveModule(ReactApplicationContext reactContext) {
         super(reactContext);
         this.context = reactContext;
@@ -159,10 +160,17 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
 
         nskAlgoSdk.setOnSignalQualityListener(new NskAlgoSdk.OnSignalQualityListener() {
             @Override
-            public void onSignalQuality(final int level) {
-                WritableMap event = Arguments.createMap();
-                event.putInt("level", level);
-                sendEvent(context, SIGNAL_QUALITY, event);
+            public void onSignalQuality(int level) {
+                final int fLevel = level;
+                context.runOnJSQueueThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WritableMap event = Arguments.createMap();
+                        event.putInt("level", fLevel);
+                        sendEvent(context, SIGNAL_QUALITY, event);
+                    }
+                });
+
             }
         });
 
@@ -171,49 +179,72 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             public void onAPAlgoIndex(float value) {
                 Log.d(TAG, "NskAlgoAPAlgoIndexListener: AP: " + value);
                 final float fValue = value;
-                WritableMap event = Arguments.createMap();
-                event.putDouble("value", value);
-                sendEvent(context, APPRECIATION_ALGO_INDEX, event);
+                context.runOnJSQueueThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WritableMap event = Arguments.createMap();
+                        event.putDouble("value", fValue);
+                        sendEvent(context, APPRECIATION_ALGO_INDEX, event);
+                    }
+                });
+
             }
         });
 
         nskAlgoSdk.setOnMEAlgoIndexListener(new NskAlgoSdk.OnMEAlgoIndexListener() {
             @Override
-            public void onMEAlgoIndex(final float abs_me, final float diff_me, float max_me, float min_me) {
+            public void onMEAlgoIndex(final float abs_me, final float diff_me, final float max_me, final float min_me) {
                 Log.d(TAG, "NskAlgoMEAlgoIndexListener: ME: abs:" + abs_me + ", diff:" + diff_me + "[" + min_me + ":" + max_me + "]");
-                WritableMap event = Arguments.createMap();
-                event.putDouble("abs_me", abs_me);
-                event.putDouble("diff_me", diff_me);
-                event.putDouble("max_me", max_me);
-                event.putDouble("min_me", min_me);
-                sendEvent(context, MENTAL_EFFORT_ALGO_INDEX, event);
+                context.runOnJSQueueThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WritableMap event = Arguments.createMap();
+                        event.putDouble("abs_me", abs_me);
+                        event.putDouble("diff_me", diff_me);
+                        event.putDouble("max_me", max_me);
+                        event.putDouble("min_me", min_me);
+                        sendEvent(context, MENTAL_EFFORT_ALGO_INDEX, event);
+                    }
+                });
+
                 me_index++;
             }
         });
 
         nskAlgoSdk.setOnME2AlgoIndexListener(new NskAlgoSdk.OnME2AlgoIndexListener() {
             @Override
-            public void onME2AlgoIndex(float total_me, float me_rate, float changing_rate) {
+            public void onME2AlgoIndex(final float total_me, final float me_rate, final float changing_rate) {
                 Log.d(TAG, "NskAlgoME2AlgoIndexListener: ME2: total:" + total_me + ", rate:" + me_rate + ", chg rate:" + changing_rate);
-                WritableMap event = Arguments.createMap();
-                event.putDouble("total_me", total_me);
-                event.putDouble("me_rate", me_rate);
-                event.putDouble("changing_rate", changing_rate);
-                sendEvent(context, MENTAL_EFFORT2_ALGO_INDEX, event);
+                context.runOnJSQueueThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WritableMap event = Arguments.createMap();
+                        event.putDouble("total_me", total_me);
+                        event.putDouble("me_rate", me_rate);
+                        event.putDouble("changing_rate", changing_rate);
+                        sendEvent(context, MENTAL_EFFORT2_ALGO_INDEX, event);
+                    }
+                });
 
             }
         });
 
         nskAlgoSdk.setOnFAlgoIndexListener(new NskAlgoSdk.OnFAlgoIndexListener() {
             @Override
-            public void onFAlgoIndex(final float abs_f, final float diff_f, float max_f, float min_f) {
+            public void onFAlgoIndex(final float abs_f, final float diff_f, final float max_f, final float min_f) {
                 Log.d(TAG, "NskAlgoFAlgoIndexListener: F: abs:" + abs_f + ", diff:" + diff_f + "[" + min_f + ":" + max_f + "]");
-                WritableMap event = Arguments.createMap();
-                event.putDouble("abs_f", abs_f);
-                event.putDouble("diff_f", diff_f);
-                event.putDouble("max_f", max_f);
-                event.putDouble("min_f", min_f);
-                sendEvent(context, FAMILIARITY_ALGO_INDEX, event);
+                context.runOnJSQueueThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WritableMap event = Arguments.createMap();
+                        event.putDouble("abs_f", abs_f);
+                        event.putDouble("diff_f", diff_f);
+                        event.putDouble("max_f", max_f);
+                        event.putDouble("min_f", min_f);
+                        sendEvent(context, FAMILIARITY_ALGO_INDEX, event);
+                    }
+                });
+
                 f_index++;
             }
         });
@@ -222,30 +253,46 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onF2AlgoIndex(final int progress_level, final float f_degree) {
                 Log.d(TAG, "NskAlgoAPAlgoIndexListener: F2: Level: " + progress_level + " Degree: " + f_degree);
-                WritableMap event = Arguments.createMap();
-                event.putInt("progress_level", progress_level);
-                event.putDouble("f_degree", f_degree);
-                sendEvent(context, FAMILIARITY2_ALGO_INDEX, event);
+                context.runOnJSQueueThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WritableMap event = Arguments.createMap();
+                        event.putInt("progress_level", progress_level);
+                        event.putDouble("f_degree", f_degree);
+                        sendEvent(context, FAMILIARITY2_ALGO_INDEX, event);
+                    }
+                });
+
             }
         });
 
         nskAlgoSdk.setOnAttAlgoIndexListener(new NskAlgoSdk.OnAttAlgoIndexListener() {
             @Override
-            public void onAttAlgoIndex(int value) {
+            public void onAttAlgoIndex(final int value) {
                 Log.d(TAG, "NskAlgoAttAlgoIndexListener: Attention:" + value);
-                WritableMap event = Arguments.createMap();
-                event.putInt("value", value);
-                sendEvent(context, ATTENTION_ALGO_INDEX, event);
+                context.runOnJSQueueThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WritableMap event = Arguments.createMap();
+                        event.putInt("value", value);
+                        sendEvent(context, ATTENTION_ALGO_INDEX, event);
+                    }
+                });
             }
         });
 
         nskAlgoSdk.setOnMedAlgoIndexListener(new NskAlgoSdk.OnMedAlgoIndexListener() {
             @Override
-            public void onMedAlgoIndex(int value) {
+            public void onMedAlgoIndex(final int value) {
                 Log.d(TAG, "NskAlgoAttAlgoIndexListener: Meditation:" + value);
-                WritableMap event = Arguments.createMap();
-                event.putInt("value", value);
-                sendEvent(context, MEDITATION_ALGO_INDEX, event);
+                context.runOnJSQueueThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WritableMap event = Arguments.createMap();
+                        event.putInt("value", value);
+                        sendEvent(context, MEDITATION_ALGO_INDEX, event);
+                    }
+                });
             }
         });
 
@@ -315,8 +362,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
     public void setAlgos(int algoTypes) {
         if (algoTypes == 0) {
             Log.d(TAG, "Please select at least one algorithm");
-        }
-        else {
+        } else {
             if (bInited) {
                 nskAlgoSdk.NskAlgoUninit();
                 bInited = false;
@@ -410,23 +456,19 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             //Log.i(TAG,"onDataReceived");
             switch (datatype) {
                 case MindDataType.CODE_ATTENTION:
-                    Log.i(TAG,"DATA RECEIVED: ATTENTION");
                     short attValue[] = {(short) data};
                     nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_ATT.value, attValue, 1);
                     break;
                 case MindDataType.CODE_MEDITATION:
-                    Log.i(TAG,"DATA RECEIVED: MEDITATION");
                     short medValue[] = {(short) data};
                     nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_MED.value, medValue, 1);
                     break;
                 case MindDataType.CODE_POOR_SIGNAL:
-                    Log.i(TAG,"DATA RECEIVED: POOR_SIGNAL");
                     short pqValue[] = {(short) data};
                     nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_PQ.value, pqValue, 1);
 
                     break;
                 case MindDataType.CODE_RAW:
-                    Log.i(TAG,"DATA RECEIVED: RAW_DATA");
                     if (bRunning == false) {
                         nskAlgoSdk.NskAlgoStart(false);
                         bRunning = true;
