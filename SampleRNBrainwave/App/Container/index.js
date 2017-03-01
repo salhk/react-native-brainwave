@@ -49,11 +49,8 @@ export default class App extends Component {
                 <Text>
                     {this.state.signalQuality}
                 </Text>
-                <VictoryLine
-                    data={this.state.attention}
-                    x="time"
-                    y="value"
-                />
+                {this.renderChart()}
+                
 
 
             </View>
@@ -65,6 +62,21 @@ export default class App extends Component {
         DeviceEventEmitter.addListener(RNBrainwave.SIGNAL_QUALITY, this.signalQualityChange.bind(this));
         DeviceEventEmitter.addListener(RNBrainwave.ATTENTION_ALGO_INDEX, this.attentionIndexHandler.bind(this));
         RNBrainwave.setDefaultAlgos();
+    }
+
+    renderChart() {
+        if (this.state.attention.length > 0) {
+            return (
+                <VictoryLine
+                    data={this.state.attention}
+                    x="time"
+                    y="value"
+                />
+            )
+        }
+        else {
+            return null;
+        }
     }
 
     connect() {

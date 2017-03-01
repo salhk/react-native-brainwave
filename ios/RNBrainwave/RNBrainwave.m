@@ -46,6 +46,8 @@ float lAttention = 0;
 float lAppreciation = 0;
 float lMentalEffort_abs = 0, lMentalEffort_diff = 0;
 
+NskAlgoType algoTypes;
+
 #ifndef IOS_DEVICE
 #define SAMPLE_COUNT        600
 float ap[SAMPLE_COUNT];
@@ -58,6 +60,7 @@ int bp_index = 0;
 NSString *const CONNECTION_STATE = @"CONNECTION_STATE";
 NSString *const CONNECTION_ERROR = @"CONNECTION_ERROR";
 NSString *const SIGNAL_QUALITY = @"SIGNAL_QUALITY";
+NSString *const ALGO_STATE = @"ALGO_STATE";
 NSString *const ATTENTION_ALGO_INDEX = @"ATTENTION_ALGO_INDEX";
 NSString *const MEDITATION_ALGO_INDEX = @"MEDITATION_ALGO_INDEX";
 NSString *const APPRECIATION_ALGO_INDEX = @"APPRECIATION_ALGO_INDEX";
@@ -71,7 +74,10 @@ NSString *const FAMILIARITY2_ALGO_INDEX = @"FAMILIARITY2_ALGO_INDEX";
 - (instancetype)init {
 #ifdef IOS_DEVICE
     // we use real mindwave headset on iOS device
-    [[TGStream sharedInstance] setDelegate:self];
+    
+    
+    bRunning = FALSE;
+
 #else
     // we use canned data for simulator
 #endif
@@ -163,6 +169,9 @@ NSString *const FAMILIARITY2_ALGO_INDEX = @"FAMILIARITY2_ALGO_INDEX";
     }
     printf("%s", [stateStr UTF8String]);
     printf("\n");
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:ALGO_STATE
+                                                 body:@{@"state": @(state)}];
 }
 
 
@@ -191,7 +200,7 @@ NSString *const FAMILIARITY2_ALGO_INDEX = @"FAMILIARITY2_ALGO_INDEX";
             level = 3;
             break;
     }
-    [self.bridge.eventDispatcher sendAppEventWithName:@"EventReminder"
+    [self.bridge.eventDispatcher sendAppEventWithName:SIGNAL_QUALITY
                                                  body:@{@"level": @(level)}];
     
     
@@ -370,6 +379,8 @@ int rawCount = 0;
             rawCount++;
             //[self addValue:@(data) array:self->eegIndex];
             if (bRunning == FALSE) {
+                [[NskAlgoSdk sharedInstance] startProcess];
+                bRunning = TRUE;
                 return;
             }
         {
@@ -498,14 +509,78 @@ RCT_EXPORT_METHOD(connect)
 {
 #ifdef IOS_DEVICE
     // we use real mindwave headset on iOS device
+    [[TGStream sharedInstance] setDelegate:self];
     [[TGStream sharedInstance] initConnectWithAccessorySession];
-    NskAlgoSdk *handle = [NskAlgoSdk sharedInstance];
-    handle.delegate = self;
+    bRunning = FALSE;
+    
 #else
     // we use canned data for simulator
 #endif
     
 }
+
+RCT_EXPORT_METHOD(setDefaultAlgos)
+{
+    algoTypes = 0;
+    //algoTypes |= NskAlgoEegTypeAP;
+    algoTypes |= NskAlgoEegTypeME;
+    //algoTypes |= NskAlgoEegTypeME2;
+    algoTypes |= NskAlgoEegTypeF;
+    //algoTypes |= NskAlgoEegTypeF2;
+    algoTypes |= NskAlgoEegTypeAtt;
+    algoTypes |= NskAlgoEegTypeMed;
+    //algoTypes |= NskAlgoEegTypeBP;
+    //algoTypes |= NskAlgoEegTypeBlink;
+    
+    [self setAlgos:algoTypes];
+
+}
+
+RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
+{
+    NskAlgoSdk *handle = [NskAlgoSdk sharedInstance];
+    handle.delegate = self;
+    
+    int ret;
+    
+    if ((ret = [[NskAlgoSdk sharedInstance] setAlgorithmTypes:algoTypes licenseKey:(char*)"NeuroSky_Release_To_GeneralFreeLicense_Use_Only_Nov 23 2016"]) != 0) {
+        
+        return;
+    }
+    
+    NSMutableString *version = [NSMutableString stringWithFormat:@"SDK Ver.: %@", [[NskAlgoSdk sharedInstance] getSdkVersion]];
+    if (algoTypes & NskAlgoEegTypeAP) {
+        [version appendFormat:@"\nAppreciation Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeAP]];
+    }
+    if (algoTypes & NskAlgoEegTypeME) {
+        [version appendFormat:@"\nMental Effort Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeME]];
+    }
+    if (algoTypes & NskAlgoEegTypeME2) {
+        [version appendFormat:@"\nMental Effort 2 Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeME2]];
+    }
+    if (algoTypes & NskAlgoEegTypeF) {
+        [version appendFormat:@"\nFamiliarity Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeF]];
+    }
+    if (algoTypes & NskAlgoEegTypeF2) {
+        [version appendFormat:@"\nFamiliarity 2 Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeF2]];
+    }
+    if (algoTypes & NskAlgoEegTypeAtt) {
+        [version appendFormat:@"\nAttention Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeAtt]];
+    }
+    if (algoTypes & NskAlgoEegTypeMed) {
+        [version appendFormat:@"\nMeditation Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeMed]];
+    }
+    if (algoTypes & NskAlgoEegTypeBP) {
+        [version appendFormat:@"\nEEG Bandpower Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeBP]];
+    }
+    if (algoTypes & NskAlgoEegTypeBlink) {
+        [version appendFormat:@"\nBlink Detection Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeBlink]];
+    }
+    
+    NSLog(@"%@", version);
+    
+}
+
 
 
 - (NSDictionary *)constantsToExport

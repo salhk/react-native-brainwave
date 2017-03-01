@@ -65,6 +65,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
     private static final String CONNECTION_STATE = "CONNECTION_STATE";
     private static final String CONNECTION_ERROR = "CONNECTION_ERROR";
     private static final String SIGNAL_QUALITY = "SIGNAL_QUALITY";
+    private static final String ALGO_STATE = "ALGO_STATE";
     private static final String ATTENTION_ALGO_INDEX = "ATTENTION_ALGO_INDEX";
     private static final String MEDITATION_ALGO_INDEX = "MEDITATION_ALGO_INDEX";
     private static final String APPRECIATION_ALGO_INDEX = "APPRECIATION_ALGO_INDEX";
@@ -113,7 +114,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
 
         nskAlgoSdk.setOnStateChangeListener(new NskAlgoSdk.OnStateChangeListener() {
             @Override
-            public void onStateChange(int state, int reason) {
+            public void onStateChange(final int state, int reason) {
                 String stateStr = "";
                 String reasonStr = "";
                 for (NskAlgoState s : NskAlgoState.values()) {
@@ -126,6 +127,14 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                         reasonStr = r.toString();
                     }
                 }
+                context.runOnJSQueueThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        WritableMap event = Arguments.createMap();
+                        event.putInt("state", state);
+                        sendEvent(context, ALGO_STATE, event);
+                    }
+                });
                 Log.d(TAG, "NskAlgoSdkStateChangeListener: state: " + stateStr + ", reason: " + reasonStr);
                 final String finalStateStr = stateStr + " | " + reasonStr;
                 final int finalState = state;
