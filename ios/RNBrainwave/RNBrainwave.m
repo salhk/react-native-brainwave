@@ -72,275 +72,37 @@ NSString *const FAMILIARITY2_ALGO_INDEX = @"FAMILIARITY2_ALGO_INDEX";
 
 
 - (instancetype)init {
-#ifdef IOS_DEVICE
-    // we use real mindwave headset on iOS device
-    
-    
-    bRunning = FALSE;
+    [[TGStream sharedInstance] setDelegate:self];
 
-#else
-    // we use canned data for simulator
-#endif
     return self;
 }
 
-#pragma mark
-#pragma NSK EEG SDK Delegate
-- (void)stateChanged:(NskAlgoState)state reason:(NskAlgoReason)reason {
-    if (stateStr == nil) {
-        stateStr = [[NSMutableString alloc] init];
-    }
-    [stateStr setString:@""];
-    [stateStr appendString:@"SDK State: "];
-    switch (state) {
-        case NskAlgoStateCollectingBaselineData:
-        {
-            bRunning = TRUE;
-            bPaused = FALSE;
-            [stateStr appendString:@"Collecting baseline"];
-        }
-            break;
-        case NskAlgoStateAnalysingBulkData:
-        {
-            bRunning = TRUE;
-            bPaused = FALSE;
-            [stateStr appendString:@"Analysing Bulk Data"];
-        }
-            break;
-        case NskAlgoStateInited:
-        {
-            bRunning = FALSE;
-            bPaused = TRUE;
-            [stateStr appendString:@"Inited"];
-        }
-            break;
-        case NskAlgoStatePause:
-        {
-            bPaused = TRUE;
-            [stateStr appendString:@"Pause"];
-        }
-            break;
-        case NskAlgoStateRunning:
-        {
-            [stateStr appendString:@"Running"];
-            bRunning = TRUE;
-            bPaused = FALSE;
-        }
-            break;
-        case NskAlgoStateStop:
-        {
-            [stateStr appendString:@"Stop"];
-            bRunning = FALSE;
-            bPaused = TRUE;
-        }
-            break;
-        case NskAlgoStateUninited:
-            [stateStr appendString:@"Uninit"];
-            break;
-    }
-    switch (reason) {
-        case NskAlgoReasonBaselineExpired:
-            [stateStr appendString:@" | Baseline expired"];
-            break;
-        case NskAlgoReasonConfigChanged:
-            [stateStr appendString:@" | Config changed"];
-            break;
-        case NskAlgoReasonNoBaseline:
-            [stateStr appendString:@" | No Baseline"];
-            break;
-        case NskAlgoReasonSignalQuality:
-            [stateStr appendString:@" | Signal quality"];
-            break;
-        case NskAlgoReasonUserProfileChanged:
-            [stateStr appendString:@" | User profile changed"];
-            break;
-        case NskAlgoReasonUserTrigger:
-            [stateStr appendString:@" | By user"];
-            break;
-        case NskAlgoReasonExpired:
-            
-            break;
-        case NskAlgoReasonInternetError:
-            
-            break;
-        case NskAlgoReasonKeyError:
-            
-            break;
-    }
-    printf("%s", [stateStr UTF8String]);
-    printf("\n");
+- (NSString*)GetCurrentTimeStamp
+{
+    NSDate *now = [NSDate date];
     
-    [self.bridge.eventDispatcher sendAppEventWithName:ALGO_STATE
-                                                 body:@{@"state": @(state)}];
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"hh:mm:ss:SSS";
+    [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
+    return [dateFormatter stringFromDate:now];
 }
 
-
-- (void)signalQuality:(NskAlgoSignalQuality)signalQuality {
-    if (signalStr == nil) {
-        signalStr = [[NSMutableString alloc] init];
-    }
-    [signalStr setString:@""];
-    [signalStr appendString:@"Signal quailty: "];
-    int level = 0;
-    switch (signalQuality) {
-        case NskAlgoSignalQualityGood:
-            [signalStr appendString:@"Good"];
-            level = 0;
-            break;
-        case NskAlgoSignalQualityMedium:
-            [signalStr appendString:@"Medium"];
-            level = 1;
-            break;
-        case NskAlgoSignalQualityNotDetected:
-            [signalStr appendString:@"Not detected"];
-            level = 2;
-            break;
-        case NskAlgoSignalQualityPoor:
-            [signalStr appendString:@"Poor"];
-            level = 3;
-            break;
-    }
-    [self.bridge.eventDispatcher sendAppEventWithName:SIGNAL_QUALITY
-                                                 body:@{@"level": @(level)}];
-    
-    
-    
-    printf("%s", [signalStr UTF8String]);
-    printf("\n");
+- (NSString *) timeInMiliSeconds
+{
+    NSDate *date = [NSDate date];
+    NSString * timeInMS = [NSString stringWithFormat:@"%lld", [@(floor([date timeIntervalSince1970] * 1000)) longLongValue]];
+    return timeInMS;
 }
 
-- (void)bpAlgoIndex:(NSNumber *)delta theta:(NSNumber *)theta alpha:(NSNumber *)alpha beta:(NSNumber *)beta gamma:(NSNumber *)gamma {
-    NSLog(@"bp[%d] = (delta)%1.6f (theta)%1.6f (alpha)%1.6f (beta)%1.6f (gamma)%1.6f", bp_index, [delta floatValue], [theta floatValue], [alpha floatValue], [beta floatValue], [gamma floatValue]);
-    bp_index++;
+-(NSString *) NowString{
     
-    //    [self addValue:delta array:[algoList[SegmentEEGBandpower] getIndex:0]];
-    //    [self addValue:theta array:[algoList[SegmentEEGBandpower] getIndex:1]];
-    //    [self addValue:alpha array:[algoList[SegmentEEGBandpower] getIndex:2]];
-    //    [self addValue:beta array:[algoList[SegmentEEGBandpower] getIndex:3]];
-    //    [self addValue:gamma array:[algoList[SegmentEEGBandpower] getIndex:4]];
+    NSDate *date=[NSDate date];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    
+    return [dateFormatter stringFromDate:date];
 }
-
-- (void)apAlgoIndex:(NSNumber *)value {
-    NSLog(@"ap[%d] = %1.15f", ap_index, [value floatValue]);
-    lAppreciation = [value floatValue];
-#ifndef IOS_DEVICE
-    ap[ap_index] = lAppreciation;
-#endif
-    ap_index++;
-    
-    //    [self addValue:value array:[algoList[SegmentAppreciation] getIndex:0]];
-    [self.bridge.eventDispatcher sendAppEventWithName:APPRECIATION_ALGO_INDEX
-                                                 body:@{@"value": value}];
-    
-}
-
-- (void)meAlgoIndex:(NSNumber *)abs_me diff_me:(NSNumber *)diff_me max_me:(NSNumber *)max_me min_me:(NSNumber *)min_me {
-    
-    NSLog(@"me[%d] = ABS:%1.8f DIF:%1.8f [%1.0f:%1.0f]", me_index, [abs_me floatValue], [diff_me floatValue], [min_me floatValue], [max_me floatValue]);
-    lMentalEffort_abs = [abs_me floatValue];
-    lMentalEffort_diff = [diff_me floatValue];
-#ifndef IOS_DEVICE
-    me[me_index] = lMentalEffort_abs;
-#endif
-    me_index++;
-    //    [self addValue:abs_me array:[algoList[SegmentMentalEffort] getIndex:0]];
-    //    [self addValue:diff_me array:[algoList[SegmentMentalEffort] getIndex:1]];
-    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
-                                                 body:@{
-                                                        @"abs_me": abs_me,
-                                                        @"diff_me": diff_me,
-                                                        @"max_me": max_me,
-                                                        @"min_me": min_me
-                                                        }];
-    
-}
-
-- (void) me2AlgoIndex: (NSNumber*)total_me me_rate:(NSNumber*)me_rate changing_rate:(NSNumber*)changing_rate {
-    NSLog(@"me2[%d] = (total)%1.6f (rate)%1.6f (chg rate)%1.6f", me2_index, [total_me floatValue], [me_rate floatValue], [changing_rate floatValue]);
-    
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"hh:mm:ss"];
-        
-    });
-    
-    me2_index++;
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
-                                                 body:@{
-                                                        @"total_me": total_me,
-                                                        @"me_rate": me_rate,
-                                                        @"changing_rate": changing_rate
-                                                        }];
-}
-
-- (void)fAlgoIndex:(NSNumber *)abs_f diff_f:(NSNumber *)diff_f max_f:(NSNumber *)max_f min_f:(NSNumber *)min_f {
-    
-    
-    NSLog(@"f[%d] = ABS:%1.8f DIF:%1.8f [%1.0f:%1.0f]", f_index, [abs_f floatValue], [diff_f floatValue], [min_f floatValue], [max_f floatValue]);
-#ifndef IOS_DEVICE
-    f[f_index] = [abs_f floatValue];
-#endif
-    f_index++;
-    //    [self addValue:abs_f array:[algoList[SegmentFamiliarity] getIndex:0]];
-    //    [self addValue:diff_f array:[algoList[SegmentFamiliarity] getIndex:1]];
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
-                                                 body:@{
-                                                        @"abs_f": abs_f,
-                                                        @"diff_f": diff_f,
-                                                        @"min_f": min_f,
-                                                        @"max_f": max_f
-                                                        }];
-}
-
-- (void)f2AlgoIndex:(NSNumber *)progress_level f_degree:(NSNumber *)f_degree {
-    NSLog(@"f2[%d] = %d, %1.15f", f2_index, [progress_level intValue], [f_degree floatValue]);
-    
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat:@"hh:mm:ss"];
-        
-    });
-    f2_index++;
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
-                                                 body:@{
-                                                        @"progress_level": progress_level,
-                                                        @"f_degree": f_degree
-                                                        }];
-}
-
-- (void)attAlgoIndex:(NSNumber *)value {
-    NSLog(@"Attention: %f", [value floatValue]);
-    lAttention = [value floatValue];
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
-                                                 body:@{
-                                                        @"value": value
-                                                        }];
-}
-
-- (void)medAlgoIndex:(NSNumber *)value {
-    NSLog(@"Meditation: %f", [value floatValue]);
-    lMeditation = [value floatValue];
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
-                                                 body:@{
-                                                        @"value": value
-                                                        }];
-}
-
-
-BOOL bBlink = NO;
-- (void)eyeBlinkDetect:(NSNumber *)strength {
-    NSLog(@"Eye blink detected: %d", [strength intValue]);
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        bBlink = YES;
-    });
-}
-
-#ifdef IOS_DEVICE
 
 static long long current_timestamp() {
     struct timeval te;
@@ -432,10 +194,137 @@ bool bTGStreamInited = false;
     NSLog(@"CheckSum lentgh:%lu  CheckSum:%lu",(unsigned long)length,(unsigned long)checksum);
 }
 
+
+
+#pragma mark
+#pragma NSK EEG SDK Delegate
+- (void)stateChanged:(NskAlgoState)state reason:(NskAlgoReason)reason {
+    if (stateStr == nil) {
+        stateStr = [[NSMutableString alloc] init];
+    }
+    [stateStr setString:@""];
+    [stateStr appendString:@"SDK State: "];
+    switch (state) {
+        case NskAlgoStateCollectingBaselineData:
+        {
+            bRunning = TRUE;
+            bPaused = FALSE;
+            [stateStr appendString:@"Collecting baseline"];
+        }
+            break;
+        case NskAlgoStateAnalysingBulkData:
+        {
+            bRunning = TRUE;
+            bPaused = FALSE;
+            [stateStr appendString:@"Analysing Bulk Data"];
+        }
+            break;
+        case NskAlgoStateInited:
+        {
+            bRunning = FALSE;
+            bPaused = TRUE;
+            [stateStr appendString:@"Inited"];
+        }
+            break;
+        case NskAlgoStatePause:
+        {
+            bPaused = TRUE;
+            [stateStr appendString:@"Pause"];
+        }
+            break;
+        case NskAlgoStateRunning:
+        {
+            [stateStr appendString:@"Running"];
+            bRunning = TRUE;
+            bPaused = FALSE;
+        }
+            break;
+        case NskAlgoStateStop:
+        {
+            [stateStr appendString:@"Stop"];
+            bRunning = FALSE;
+            bPaused = TRUE;
+        }
+            break;
+        case NskAlgoStateUninited:
+            [stateStr appendString:@"Uninit"];
+            break;
+    }
+    switch (reason) {
+        case NskAlgoReasonBaselineExpired:
+            [stateStr appendString:@" | Baseline expired"];
+            break;
+        case NskAlgoReasonConfigChanged:
+            [stateStr appendString:@" | Config changed"];
+            break;
+        case NskAlgoReasonNoBaseline:
+            [stateStr appendString:@" | No Baseline"];
+            break;
+        case NskAlgoReasonSignalQuality:
+            [stateStr appendString:@" | Signal quality"];
+            break;
+        case NskAlgoReasonUserProfileChanged:
+            [stateStr appendString:@" | User profile changed"];
+            break;
+        case NskAlgoReasonUserTrigger:
+            [stateStr appendString:@" | By user"];
+            break;
+        case NskAlgoReasonExpired:
+            
+            break;
+        case NskAlgoReasonInternetError:
+            
+            break;
+        case NskAlgoReasonKeyError:
+            
+            break;
+    }
+    printf("%s", [stateStr UTF8String]);
+    printf("\n");
+    
+//    [self.bridge.eventDispatcher sendAppEventWithName:ALGO_STATE
+//                                                 body:@{@"state": @(state)}];
+}
+
+
+- (void)signalQuality:(NskAlgoSignalQuality)signalQuality {
+    if (signalStr == nil) {
+        signalStr = [[NSMutableString alloc] init];
+    }
+    [signalStr setString:@""];
+    [signalStr appendString:@"Signal quailty: "];
+    int level = 0;
+    switch (signalQuality) {
+        case NskAlgoSignalQualityGood:
+            [signalStr appendString:@"Good"];
+            level = 0;
+            break;
+        case NskAlgoSignalQualityMedium:
+            [signalStr appendString:@"Medium"];
+            level = 1;
+            break;
+        case NskAlgoSignalQualityNotDetected:
+            [signalStr appendString:@"Not detected"];
+            level = 2;
+            break;
+        case NskAlgoSignalQualityPoor:
+            [signalStr appendString:@"Poor"];
+            level = 3;
+            break;
+    }
+    [self.bridge.eventDispatcher sendAppEventWithName:SIGNAL_QUALITY
+                                                 body:@{@"level": @(level)}];
+    
+    
+    
+    printf("%s", [signalStr UTF8String]);
+    printf("\n");
+}
+
 static ConnectionStates lastConnectionState = -1;
 -(void)onStatesChanged:(ConnectionStates)connectionState{
     //NSLog(@"%@\n Connection States:%lu\n",[self NowString],(unsigned long)connectionState);
-
+    
     lastConnectionState = connectionState;
     
     [self.bridge.eventDispatcher sendAppEventWithName:CONNECTION_STATE
@@ -486,20 +375,126 @@ static ConnectionStates lastConnectionState = -1;
     }
 }
 
--(NSString *) NowString{
-    
-    NSDate *date=[NSDate date];
-    
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-    
-    return [dateFormatter stringFromDate:date];
-}
-
 -(void) onRecordFail:(RecrodError)flag{
     NSLog(@"%@\n Record Fail:%lu\n",[self NowString],(unsigned long)flag);
 }
+
+
+
+
+- (void)bpAlgoIndex:(NSNumber *)delta theta:(NSNumber *)theta alpha:(NSNumber *)alpha beta:(NSNumber *)beta gamma:(NSNumber *)gamma {
+    NSLog(@"bp[%d] = (delta)%1.6f (theta)%1.6f (alpha)%1.6f (beta)%1.6f (gamma)%1.6f", bp_index, [delta floatValue], [theta floatValue], [alpha floatValue], [beta floatValue], [gamma floatValue]);
+    bp_index++;
+}
+
+- (void)apAlgoIndex:(NSNumber *)value {
+    NSLog(@"ap[%d] = %1.15f", ap_index, [value floatValue]);
+    lAppreciation = [value floatValue];
+#ifndef IOS_DEVICE
+    ap[ap_index] = lAppreciation;
 #endif
+    ap_index++;
+    
+//    [self.bridge.eventDispatcher sendAppEventWithName:APPRECIATION_ALGO_INDEX
+//                                                 body:@{@"value": value}];
+    
+}
+
+- (void)meAlgoIndex:(NSNumber *)abs_me diff_me:(NSNumber *)diff_me max_me:(NSNumber *)max_me min_me:(NSNumber *)min_me {
+    
+    NSLog(@"me[%d] = ABS:%1.8f DIF:%1.8f [%1.0f:%1.0f]", me_index, [abs_me floatValue], [diff_me floatValue], [min_me floatValue], [max_me floatValue]);
+    lMentalEffort_abs = [abs_me floatValue];
+    lMentalEffort_diff = [diff_me floatValue];
+#ifndef IOS_DEVICE
+    me[me_index] = lMentalEffort_abs;
+#endif
+    me_index++;
+//    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
+//                                                 body:@{
+//                                                        @"abs_me": abs_me,
+//                                                        @"diff_me": diff_me,
+//                                                        @"max_me": max_me,
+//                                                        @"min_me": min_me
+//                                                        }];
+    
+}
+
+- (void) me2AlgoIndex: (NSNumber*)total_me me_rate:(NSNumber*)me_rate changing_rate:(NSNumber*)changing_rate {
+    NSLog(@"me2[%d] = (total)%1.6f (rate)%1.6f (chg rate)%1.6f", me2_index, [total_me floatValue], [me_rate floatValue], [changing_rate floatValue]);
+    
+    me2_index++;
+    
+//    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT2_ALGO_INDEX
+//                                                 body:@{
+//                                                        @"total_me": total_me,
+//                                                        @"me_rate": me_rate,
+//                                                        @"changing_rate": changing_rate
+//                                                        }];
+}
+
+- (void)fAlgoIndex:(NSNumber *)abs_f diff_f:(NSNumber *)diff_f max_f:(NSNumber *)max_f min_f:(NSNumber *)min_f {
+    
+    
+    NSLog(@"f[%d] = ABS:%1.8f DIF:%1.8f [%1.0f:%1.0f]", f_index, [abs_f floatValue], [diff_f floatValue], [min_f floatValue], [max_f floatValue]);
+#ifndef IOS_DEVICE
+    f[f_index] = [abs_f floatValue];
+#endif
+    f_index++;
+//    [self.bridge.eventDispatcher sendAppEventWithName:FAMILIARITY_ALGO_INDEX
+//                                                 body:@{
+//                                                        @"abs_f": abs_f,
+//                                                        @"diff_f": diff_f,
+//                                                        @"min_f": min_f,
+//                                                        @"max_f": max_f
+//                                                        }];
+}
+
+- (void)f2AlgoIndex:(NSNumber *)progress_level f_degree:(NSNumber *)f_degree {
+    NSLog(@"f2[%d] = %d, %1.15f", f2_index, [progress_level intValue], [f_degree floatValue]);
+    
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        NSDateFormatter *dateFormatter =[[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"hh:mm:ss"];
+        
+    });
+    f2_index++;
+    
+//    [self.bridge.eventDispatcher sendAppEventWithName:FAMILIARITY2_ALGO_INDEX
+//                                                 body:@{
+//                                                        @"progress_level": progress_level,
+//                                                        @"f_degree": f_degree
+//                                                        }];
+}
+
+- (void)attAlgoIndex:(NSNumber *)value {
+    NSLog(@"Attention: %f", [value floatValue]);
+    lAttention = [value floatValue];
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:ATTENTION_ALGO_INDEX
+                                                 body:@{
+                                                        @"value": value
+                                                        }];
+}
+
+- (void)medAlgoIndex:(NSNumber *)value {
+    NSLog(@"Meditation: %f", [value floatValue]);
+    lMeditation = [value floatValue];
+    
+//    [self.bridge.eventDispatcher sendAppEventWithName:MEDITATION_ALGO_INDEX
+//                                                 body:@{
+//                                                        @"value": value
+//                                                        }];
+}
+
+
+BOOL bBlink = NO;
+- (void)eyeBlinkDetect:(NSNumber *)strength {
+    NSLog(@"Eye blink detected: %d", [strength intValue]);
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        bBlink = YES;
+    });
+}
+
 
 
 
@@ -507,15 +502,10 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(connect)
 {
-#ifdef IOS_DEVICE
-    // we use real mindwave headset on iOS device
-    [[TGStream sharedInstance] setDelegate:self];
+    [[TGStream sharedInstance] tearDownAccessorySession];
+    bTGStreamInited= false;
     [[TGStream sharedInstance] initConnectWithAccessorySession];
     bRunning = FALSE;
-    
-#else
-    // we use canned data for simulator
-#endif
     
 }
 

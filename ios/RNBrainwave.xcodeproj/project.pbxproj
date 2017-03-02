@@ -12,6 +12,7 @@
 		BF2BD0AD1E551420008C679A /* RNBrainwave.m in Sources */ = {isa = PBXBuildFile; fileRef = BF2BD0A61E551420008C679A /* RNBrainwave.m */; };
 		BF2BD0AE1E551420008C679A /* StreamSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2BD0AB1E551420008C679A /* StreamSDK.a */; };
 		BF70BD851E66835000F2C1F4 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BD841E66835000F2C1F4 /* Accelerate.framework */; };
+		BF70BE1C1E6715F300F2C1F4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BE1B1E6715F300F2C1F4 /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,6 +40,7 @@
 		BF2BD0AA1E551420008C679A /* TGStreamEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TGStreamEnum.h; path = RNBrainwave/TGStreamEnum.h; sourceTree = "<group>"; };
 		BF2BD0AB1E551420008C679A /* StreamSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = StreamSDK.a; sourceTree = "<group>"; };
 		BF70BD841E66835000F2C1F4 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		BF70BE1B1E6715F300F2C1F4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,8 +48,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF70BD851E66835000F2C1F4 /* Accelerate.framework in Frameworks */,
 				BF2BD0AE1E551420008C679A /* StreamSDK.a in Frameworks */,
+				BF70BD851E66835000F2C1F4 /* Accelerate.framework in Frameworks */,
+				BF70BE1C1E6715F300F2C1F4 /* Foundation.framework in Frameworks */,
 				BF20F69E1E56E03100BE3184 /* AlgoSdk.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -85,6 +88,7 @@
 		BF916A2E1E5801070077C5A5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BF70BE1B1E6715F300F2C1F4 /* Foundation.framework */,
 				BF70BD841E66835000F2C1F4 /* Accelerate.framework */,
 				BF2BD0A31E551420008C679A /* AlgoSdk.framework */,
 				BF2BD0AB1E551420008C679A /* StreamSDK.a */,
@@ -258,6 +262,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/RNBrainwave",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNBrainwave;
@@ -284,6 +289,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/RNBrainwave",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNBrainwave;

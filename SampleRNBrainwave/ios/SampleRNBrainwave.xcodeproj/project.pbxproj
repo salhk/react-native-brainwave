@@ -40,6 +40,8 @@
 		BF2C75D11E5D89DB0039D898 /* libRNBrainwave.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF80F0D71E5C930C00B1E09B /* libRNBrainwave.a */; };
 		BF4D161C1E5DC59F0019FE2F /* AlgoSdk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BF2C75EC1E5D8C2D0039D898 /* AlgoSdk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BF4D16211E5DCB310019FE2F /* AlgoSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2C75EC1E5D8C2D0039D898 /* AlgoSdk.framework */; };
+		BF70BE1E1E67172E00F2C1F4 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BE1D1E67172E00F2C1F4 /* Accelerate.framework */; };
+		BF70BE3B1E67173500F2C1F4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BE3A1E67173500F2C1F4 /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -288,6 +290,9 @@
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		BF2C75EC1E5D8C2D0039D898 /* AlgoSdk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AlgoSdk.framework; path = ../../ios/AlgoSdk.framework; sourceTree = "<group>"; };
+		BF70BDA21E66964100F2C1F4 /* StreamSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = StreamSDK.a; path = ../../ios/StreamSDK.a; sourceTree = "<group>"; };
+		BF70BE1D1E67172E00F2C1F4 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		BF70BE3A1E67173500F2C1F4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		BF80F0B91E5C930C00B1E09B /* RNBrainwave.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNBrainwave.xcodeproj; path = ../../ios/RNBrainwave.xcodeproj; sourceTree = "<group>"; };
 		C011F53006784C6D9C7BB5BB /* libRNSVG.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSVG.a; sourceTree = "<group>"; };
 		EB2AD5E757A74B638AB0990E /* RNSVG.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSVG.xcodeproj; path = "../node_modules/react-native-svg/ios/RNSVG.xcodeproj"; sourceTree = "<group>"; };
@@ -306,6 +311,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BF70BE3B1E67173500F2C1F4 /* Foundation.framework in Frameworks */,
+				BF70BE1E1E67172E00F2C1F4 /* Accelerate.framework in Frameworks */,
 				BF4D16211E5DCB310019FE2F /* AlgoSdk.framework in Frameworks */,
 				BF2C75D11E5D89DB0039D898 /* libRNBrainwave.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -428,6 +435,7 @@
 		13B07FAE1A68108700A75B9A /* SampleRNBrainwave */ = {
 			isa = PBXGroup;
 			children = (
+				BF70BDA21E66964100F2C1F4 /* StreamSDK.a */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -528,6 +536,8 @@
 		BF2C75EB1E5D8C2D0039D898 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BF70BE3A1E67173500F2C1F4 /* Foundation.framework */,
+				BF70BE1D1E67172E00F2C1F4 /* Accelerate.framework */,
 				BF2C75EC1E5D8C2D0039D898 /* AlgoSdk.framework */,
 			);
 			name = Frameworks;
