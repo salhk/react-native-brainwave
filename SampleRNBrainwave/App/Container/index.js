@@ -43,6 +43,11 @@ export default class App extends Component {
                         Tap to connect
                     </Text>
                 </TouchableOpacity>
+                <TouchableOpacity onPress={this.disconnect}>
+                    <Text style={styles.button}>
+                        Disconnect
+                    </Text>
+                </TouchableOpacity>
                 <Text>
                     {this.state.connectionState}
                 </Text>
@@ -81,6 +86,10 @@ export default class App extends Component {
 
     connect() {
         RNBrainwave.connect();
+    }
+
+    disconnect() {
+        RNBrainwave.disconnect();
     }
     
     connectionStateChange(event) {
@@ -161,6 +170,9 @@ export default class App extends Component {
             time: index,
             value: value
         });
+        if (arr.length > 20) {
+            arr.shift();
+        }
         this.setState({
             attention: arr
         });

@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		BF20F69E1E56E03100BE3184 /* AlgoSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2BD0A31E551420008C679A /* AlgoSdk.framework */; };
-		BF20F6A01E56E7D600BE3184 /* canned_data.c in Sources */ = {isa = PBXBuildFile; fileRef = BF20F69F1E56E7D600BE3184 /* canned_data.c */; };
 		BF2BD0AD1E551420008C679A /* RNBrainwave.m in Sources */ = {isa = PBXBuildFile; fileRef = BF2BD0A61E551420008C679A /* RNBrainwave.m */; };
 		BF2BD0AE1E551420008C679A /* StreamSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2BD0AB1E551420008C679A /* StreamSDK.a */; };
 		BF70BD851E66835000F2C1F4 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BD841E66835000F2C1F4 /* Accelerate.framework */; };
@@ -30,7 +29,6 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNBrainwave.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNBrainwave.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		BF20F69F1E56E7D600BE3184 /* canned_data.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = canned_data.c; sourceTree = "<group>"; };
 		BF2BD0A31E551420008C679A /* AlgoSdk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AlgoSdk.framework; sourceTree = "<group>"; };
 		BF2BD0A51E551420008C679A /* RNBrainwave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBrainwave.h; sourceTree = "<group>"; };
 		BF2BD0A61E551420008C679A /* RNBrainwave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBrainwave.m; sourceTree = "<group>"; };
@@ -78,7 +76,6 @@
 		BF2BD0A41E551420008C679A /* RNBrainwave */ = {
 			isa = PBXGroup;
 			children = (
-				BF20F69F1E56E7D600BE3184 /* canned_data.c */,
 				BF2BD0A51E551420008C679A /* RNBrainwave.h */,
 				BF2BD0A61E551420008C679A /* RNBrainwave.m */,
 			);
@@ -157,7 +154,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF20F6A01E56E7D600BE3184 /* canned_data.c in Sources */,
 				BF2BD0AD1E551420008C679A /* RNBrainwave.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -70,6 +70,7 @@ NSString *const FAMILIARITY_ALGO_INDEX = @"FAMILIARITY_ALGO_INDEX";
 NSString *const FAMILIARITY2_ALGO_INDEX = @"FAMILIARITY2_ALGO_INDEX";
 
 
+RCT_EXPORT_MODULE()
 
 - (instancetype)init {
     [[TGStream sharedInstance] setDelegate:self];
@@ -77,39 +78,110 @@ NSString *const FAMILIARITY2_ALGO_INDEX = @"FAMILIARITY2_ALGO_INDEX";
     return self;
 }
 
-- (NSString*)GetCurrentTimeStamp
+RCT_EXPORT_METHOD(connect)
 {
-    NSDate *now = [NSDate date];
-    
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    dateFormatter.dateFormat = @"hh:mm:ss:SSS";
-    [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
-    return [dateFormatter stringFromDate:now];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        bTGStreamInited= false;
+        [[TGStream sharedInstance] initConnectWithAccessorySession];
+        bRunning = FALSE;
+    });
 }
 
-- (NSString *) timeInMiliSeconds
+RCT_EXPORT_METHOD(disconnect)
 {
-    NSDate *date = [NSDate date];
-    NSString * timeInMS = [NSString stringWithFormat:@"%lld", [@(floor([date timeIntervalSince1970] * 1000)) longLongValue]];
-    return timeInMS;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [[TGStream sharedInstance] tearDownAccessorySession];
+    });
 }
 
--(NSString *) NowString{
+- (void)signalQuality:(NskAlgoSignalQuality)signalQuality {
+    if (signalStr == nil) {
+        signalStr = [[NSMutableString alloc] init];
+    }
+    [signalStr setString:@""];
+    [signalStr appendString:@"Signal quailty: "];
+    int level = 0;
+    switch (signalQuality) {
+        case NskAlgoSignalQualityGood:
+            [signalStr appendString:@"Good"];
+            level = 0;
+            break;
+        case NskAlgoSignalQualityMedium:
+            [signalStr appendString:@"Medium"];
+            level = 1;
+            break;
+        case NskAlgoSignalQualityNotDetected:
+            [signalStr appendString:@"Not detected"];
+            level = 2;
+            break;
+        case NskAlgoSignalQualityPoor:
+            [signalStr appendString:@"Poor"];
+            level = 3;
+            break;
+    }
+    [self.bridge.eventDispatcher sendAppEventWithName:SIGNAL_QUALITY
+                                                 body:@{@"level": @(level)}];
     
-    NSDate *date=[NSDate date];
     
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
     
-    return [dateFormatter stringFromDate:date];
+    printf("%s", [signalStr UTF8String]);
+    printf("\n");
 }
 
-static long long current_timestamp() {
-    struct timeval te;
-    gettimeofday(&te, NULL);
-    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
-    return milliseconds;
+static ConnectionStates lastConnectionState = -1;
+-(void)onStatesChanged:(ConnectionStates)connectionState{
+    //NSLog(@"%@\n Connection States:%lu\n",[self NowString],(unsigned long)connectionState);
+    
+    lastConnectionState = connectionState;
+    
+    [self.bridge.eventDispatcher sendAppEventWithName:CONNECTION_STATE
+                                                 body:@{@"connection_state": @(lastConnectionState)}];
+    
+    switch (connectionState) {
+        case STATE_COMPLETE:
+            NSLog(@"TGStream: complete");
+            break;
+        case STATE_CONNECTED:
+            NSLog(@"TGStream: connected");
+            //            if (bTGStreamInited == false) {
+            //                [[TGStream sharedInstance] initConnectWithAccessorySession];
+            //                bTGStreamInited = true;
+            //            }
+            break;
+        case STATE_CONNECTING:
+            NSLog(@"TGStream: connecting");
+            break;
+        case STATE_DISCONNECTED:
+            NSLog(@"TGStream: disconnected");
+            if (bTGStreamInited == true) {
+                [[TGStream sharedInstance] tearDownAccessorySession];
+                bTGStreamInited= false;
+            }
+            break;
+        case STATE_ERROR:
+            NSLog(@"TGStream: error");
+            break;
+        case STATE_FAILED:
+            NSLog(@"TGStream: failed");
+            break;
+        case STATE_INIT:
+            NSLog(@"TGStream: init");
+            break;
+        case STATE_RECORDING_END:
+            NSLog(@"TGStream: record end");
+            break;
+        case STATE_RECORDING_START:
+            NSLog(@"TGStream: record start");
+            break;
+        case STATE_STOPPED:
+            NSLog(@"TGStream: stopped");
+            break;
+        case STATE_WORKING:
+            NSLog(@"TGStream: working");
+            break;
+    }
 }
+
 
 int rawCount = 0;
 
@@ -282,97 +354,8 @@ bool bTGStreamInited = false;
     printf("%s", [stateStr UTF8String]);
     printf("\n");
     
-//    [self.bridge.eventDispatcher sendAppEventWithName:ALGO_STATE
-//                                                 body:@{@"state": @(state)}];
-}
-
-
-- (void)signalQuality:(NskAlgoSignalQuality)signalQuality {
-    if (signalStr == nil) {
-        signalStr = [[NSMutableString alloc] init];
-    }
-    [signalStr setString:@""];
-    [signalStr appendString:@"Signal quailty: "];
-    int level = 0;
-    switch (signalQuality) {
-        case NskAlgoSignalQualityGood:
-            [signalStr appendString:@"Good"];
-            level = 0;
-            break;
-        case NskAlgoSignalQualityMedium:
-            [signalStr appendString:@"Medium"];
-            level = 1;
-            break;
-        case NskAlgoSignalQualityNotDetected:
-            [signalStr appendString:@"Not detected"];
-            level = 2;
-            break;
-        case NskAlgoSignalQualityPoor:
-            [signalStr appendString:@"Poor"];
-            level = 3;
-            break;
-    }
-    [self.bridge.eventDispatcher sendAppEventWithName:SIGNAL_QUALITY
-                                                 body:@{@"level": @(level)}];
-    
-    
-    
-    printf("%s", [signalStr UTF8String]);
-    printf("\n");
-}
-
-static ConnectionStates lastConnectionState = -1;
--(void)onStatesChanged:(ConnectionStates)connectionState{
-    //NSLog(@"%@\n Connection States:%lu\n",[self NowString],(unsigned long)connectionState);
-    
-    lastConnectionState = connectionState;
-    
-    [self.bridge.eventDispatcher sendAppEventWithName:CONNECTION_STATE
-                                                 body:@{@"connection_state": @(lastConnectionState)}];
-    
-    switch (connectionState) {
-        case STATE_COMPLETE:
-            NSLog(@"TGStream: complete");
-            break;
-        case STATE_CONNECTED:
-            NSLog(@"TGStream: connected");
-            if (bTGStreamInited == false) {
-                [[TGStream sharedInstance] initConnectWithAccessorySession];
-                bTGStreamInited = true;
-            }
-            break;
-        case STATE_CONNECTING:
-            NSLog(@"TGStream: connecting");
-            break;
-        case STATE_DISCONNECTED:
-            NSLog(@"TGStream: disconnected");
-            if (bTGStreamInited == true) {
-                [[TGStream sharedInstance] tearDownAccessorySession];
-                bTGStreamInited= false;
-            }
-            break;
-        case STATE_ERROR:
-            NSLog(@"TGStream: error");
-            break;
-        case STATE_FAILED:
-            NSLog(@"TGStream: failed");
-            break;
-        case STATE_INIT:
-            NSLog(@"TGStream: init");
-            break;
-        case STATE_RECORDING_END:
-            NSLog(@"TGStream: record end");
-            break;
-        case STATE_RECORDING_START:
-            NSLog(@"TGStream: record start");
-            break;
-        case STATE_STOPPED:
-            NSLog(@"TGStream: stopped");
-            break;
-        case STATE_WORKING:
-            NSLog(@"TGStream: working");
-            break;
-    }
+    [self.bridge.eventDispatcher sendAppEventWithName:ALGO_STATE
+                                                 body:@{@"state": @(state)}];
 }
 
 -(void) onRecordFail:(RecrodError)flag{
@@ -395,8 +378,8 @@ static ConnectionStates lastConnectionState = -1;
 #endif
     ap_index++;
     
-//    [self.bridge.eventDispatcher sendAppEventWithName:APPRECIATION_ALGO_INDEX
-//                                                 body:@{@"value": value}];
+    [self.bridge.eventDispatcher sendAppEventWithName:APPRECIATION_ALGO_INDEX
+                                                 body:@{@"value": value}];
     
 }
 
@@ -409,13 +392,13 @@ static ConnectionStates lastConnectionState = -1;
     me[me_index] = lMentalEffort_abs;
 #endif
     me_index++;
-//    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
-//                                                 body:@{
-//                                                        @"abs_me": abs_me,
-//                                                        @"diff_me": diff_me,
-//                                                        @"max_me": max_me,
-//                                                        @"min_me": min_me
-//                                                        }];
+    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
+                                                 body:@{
+                                                        @"abs_me": abs_me,
+                                                        @"diff_me": diff_me,
+                                                        @"max_me": max_me,
+                                                        @"min_me": min_me
+                                                        }];
     
 }
 
@@ -424,12 +407,12 @@ static ConnectionStates lastConnectionState = -1;
     
     me2_index++;
     
-//    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT2_ALGO_INDEX
-//                                                 body:@{
-//                                                        @"total_me": total_me,
-//                                                        @"me_rate": me_rate,
-//                                                        @"changing_rate": changing_rate
-//                                                        }];
+    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT2_ALGO_INDEX
+                                                 body:@{
+                                                        @"total_me": total_me,
+                                                        @"me_rate": me_rate,
+                                                        @"changing_rate": changing_rate
+                                                        }];
 }
 
 - (void)fAlgoIndex:(NSNumber *)abs_f diff_f:(NSNumber *)diff_f max_f:(NSNumber *)max_f min_f:(NSNumber *)min_f {
@@ -440,13 +423,13 @@ static ConnectionStates lastConnectionState = -1;
     f[f_index] = [abs_f floatValue];
 #endif
     f_index++;
-//    [self.bridge.eventDispatcher sendAppEventWithName:FAMILIARITY_ALGO_INDEX
-//                                                 body:@{
-//                                                        @"abs_f": abs_f,
-//                                                        @"diff_f": diff_f,
-//                                                        @"min_f": min_f,
-//                                                        @"max_f": max_f
-//                                                        }];
+    [self.bridge.eventDispatcher sendAppEventWithName:FAMILIARITY_ALGO_INDEX
+                                                 body:@{
+                                                        @"abs_f": abs_f,
+                                                        @"diff_f": diff_f,
+                                                        @"min_f": min_f,
+                                                        @"max_f": max_f
+                                                        }];
 }
 
 - (void)f2AlgoIndex:(NSNumber *)progress_level f_degree:(NSNumber *)f_degree {
@@ -459,11 +442,11 @@ static ConnectionStates lastConnectionState = -1;
     });
     f2_index++;
     
-//    [self.bridge.eventDispatcher sendAppEventWithName:FAMILIARITY2_ALGO_INDEX
-//                                                 body:@{
-//                                                        @"progress_level": progress_level,
-//                                                        @"f_degree": f_degree
-//                                                        }];
+    [self.bridge.eventDispatcher sendAppEventWithName:FAMILIARITY2_ALGO_INDEX
+                                                 body:@{
+                                                        @"progress_level": progress_level,
+                                                        @"f_degree": f_degree
+                                                        }];
 }
 
 - (void)attAlgoIndex:(NSNumber *)value {
@@ -480,10 +463,10 @@ static ConnectionStates lastConnectionState = -1;
     NSLog(@"Meditation: %f", [value floatValue]);
     lMeditation = [value floatValue];
     
-//    [self.bridge.eventDispatcher sendAppEventWithName:MEDITATION_ALGO_INDEX
-//                                                 body:@{
-//                                                        @"value": value
-//                                                        }];
+    [self.bridge.eventDispatcher sendAppEventWithName:MEDITATION_ALGO_INDEX
+                                                 body:@{
+                                                        @"value": value
+                                                        }];
 }
 
 
@@ -498,16 +481,7 @@ BOOL bBlink = NO;
 
 
 
-RCT_EXPORT_MODULE()
 
-RCT_EXPORT_METHOD(connect)
-{
-    [[TGStream sharedInstance] tearDownAccessorySession];
-    bTGStreamInited= false;
-    [[TGStream sharedInstance] initConnectWithAccessorySession];
-    bRunning = FALSE;
-    
-}
 
 RCT_EXPORT_METHOD(setDefaultAlgos)
 {
@@ -522,7 +496,11 @@ RCT_EXPORT_METHOD(setDefaultAlgos)
     //algoTypes |= NskAlgoEegTypeBP;
     //algoTypes |= NskAlgoEegTypeBlink;
     
-    [self setAlgos:algoTypes];
+    dispatch_sync(dispatch_get_main_queue(), ^{
+        [self setAlgos:algoTypes];
+    });
+    
+    
 
 }
 
@@ -572,6 +550,39 @@ RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
 }
 
 
+- (NSString*)GetCurrentTimeStamp
+{
+    NSDate *now = [NSDate date];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateFormat = @"hh:mm:ss:SSS";
+    [dateFormatter setTimeZone:[NSTimeZone systemTimeZone]];
+    return [dateFormatter stringFromDate:now];
+}
+
+- (NSString *) timeInMiliSeconds
+{
+    NSDate *date = [NSDate date];
+    NSString * timeInMS = [NSString stringWithFormat:@"%lld", [@(floor([date timeIntervalSince1970] * 1000)) longLongValue]];
+    return timeInMS;
+}
+
+-(NSString *) NowString{
+    
+    NSDate *date=[NSDate date];
+    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+    
+    return [dateFormatter stringFromDate:date];
+}
+
+static long long current_timestamp() {
+    struct timeval te;
+    gettimeofday(&te, NULL);
+    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // caculate milliseconds
+    return milliseconds;
+}
 
 - (NSDictionary *)constantsToExport
 {
