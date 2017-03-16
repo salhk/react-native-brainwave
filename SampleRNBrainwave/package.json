@@ -8,10 +8,9 @@
   },
   "dependencies": {
     "react": "^15.4.2",
-    "react-native": "0.41.0",
+    "react-native": "0.42.0",
     "react-native-brainwave": "file:../",
-    "react-native-chart": "^1.0.8-beta",
-    "react-native-svg": "^5.1.5",
+    "react-native-svg":"https://github.com/bamlab/react-native-svg.git",
     "victory-native": "^0.6.0"
   },
   "devDependencies": {

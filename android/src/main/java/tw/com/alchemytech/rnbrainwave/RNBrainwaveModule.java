@@ -26,6 +26,7 @@ import com.neurosky.AlgoSdk.NskAlgoState;
 import com.neurosky.AlgoSdk.NskAlgoType;
 import com.neurosky.connection.ConnectionStates;
 import com.neurosky.connection.DataType.MindDataType;
+import com.neurosky.connection.EEGPower;
 import com.neurosky.connection.TgStreamHandler;
 import com.neurosky.connection.TgStreamReader;
 
@@ -86,12 +87,15 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
     private static final String CONNECTION_STATE_RECORDING_END = "CONNECTION_STATE_RECORDING_END";
     private static final String CONNECTION_STATE_ERROR = "CONNECTION_STATE_ERROR";
     private static final String CONNECTION_STATE_FAILED = "CONNECTION_STATE_FAILED";
+    private static final String ESENSE_EVENT = "ESENSE_EVENT";
 
     private static final String ALGO_STATE_BASELINE = "ALGO_STATE_BASELINE";
     private static final String ALGO_STATE_RUNNING = "ALGO_STATE_RUNNING";
     private static final String ALGO_STATE_STOP = "ALGO_STATE_STOP";
     private static final String ALGO_STATE_PAUSE = "ALGO_STATE_PAUSE";
     private static final String ALGO_STATE_ANALYZING_DATA = "ALGO_STATE_ANALYZING_DATA";
+
+    private EsenseEvent currentEvent = new EsenseEvent();
 
 
     public RNBrainwaveModule(ReactApplicationContext reactContext) {
@@ -127,7 +131,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                         reasonStr = r.toString();
                     }
                 }
-                context.runOnJSQueueThread(new Runnable() {
+                context.runOnNativeModulesQueueThread(new Runnable() {
                     @Override
                     public void run() {
                         WritableMap event = Arguments.createMap();
@@ -171,7 +175,9 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onSignalQuality(int level) {
                 final int fLevel = level;
-                context.runOnJSQueueThread(new Runnable() {
+                currentEvent.poorSignal = fLevel;
+                pushEsenseEvent();
+                context.runOnNativeModulesQueueThread(new Runnable() {
                     @Override
                     public void run() {
                         WritableMap event = Arguments.createMap();
@@ -188,7 +194,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             public void onAPAlgoIndex(float value) {
                 Log.d(TAG, "NskAlgoAPAlgoIndexListener: AP: " + value);
                 final float fValue = value;
-                context.runOnJSQueueThread(new Runnable() {
+                context.runOnNativeModulesQueueThread(new Runnable() {
                     @Override
                     public void run() {
                         WritableMap event = Arguments.createMap();
@@ -204,7 +210,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onMEAlgoIndex(final float abs_me, final float diff_me, final float max_me, final float min_me) {
                 Log.d(TAG, "NskAlgoMEAlgoIndexListener: ME: abs:" + abs_me + ", diff:" + diff_me + "[" + min_me + ":" + max_me + "]");
-                context.runOnJSQueueThread(new Runnable() {
+                context.runOnNativeModulesQueueThread(new Runnable() {
                     @Override
                     public void run() {
                         WritableMap event = Arguments.createMap();
@@ -224,7 +230,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onME2AlgoIndex(final float total_me, final float me_rate, final float changing_rate) {
                 Log.d(TAG, "NskAlgoME2AlgoIndexListener: ME2: total:" + total_me + ", rate:" + me_rate + ", chg rate:" + changing_rate);
-                context.runOnJSQueueThread(new Runnable() {
+                context.runOnNativeModulesQueueThread(new Runnable() {
                     @Override
                     public void run() {
                         WritableMap event = Arguments.createMap();
@@ -242,7 +248,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onFAlgoIndex(final float abs_f, final float diff_f, final float max_f, final float min_f) {
                 Log.d(TAG, "NskAlgoFAlgoIndexListener: F: abs:" + abs_f + ", diff:" + diff_f + "[" + min_f + ":" + max_f + "]");
-                context.runOnJSQueueThread(new Runnable() {
+                context.runOnNativeModulesQueueThread(new Runnable() {
                     @Override
                     public void run() {
                         WritableMap event = Arguments.createMap();
@@ -262,7 +268,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onF2AlgoIndex(final int progress_level, final float f_degree) {
                 Log.d(TAG, "NskAlgoAPAlgoIndexListener: F2: Level: " + progress_level + " Degree: " + f_degree);
-                context.runOnJSQueueThread(new Runnable() {
+                context.runOnNativeModulesQueueThread(new Runnable() {
                     @Override
                     public void run() {
                         WritableMap event = Arguments.createMap();
@@ -279,7 +285,9 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onAttAlgoIndex(final int value) {
                 Log.d(TAG, "NskAlgoAttAlgoIndexListener: Attention:" + value);
-                context.runOnJSQueueThread(new Runnable() {
+                currentEvent.attention = value;
+                pushEsenseEvent();
+                context.runOnNativeModulesQueueThread(new Runnable() {
                     @Override
                     public void run() {
                         WritableMap event = Arguments.createMap();
@@ -294,7 +302,9 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             @Override
             public void onMedAlgoIndex(final int value) {
                 Log.d(TAG, "NskAlgoAttAlgoIndexListener: Meditation:" + value);
-                context.runOnJSQueueThread(new Runnable() {
+                currentEvent.meditation = value;
+                pushEsenseEvent();
+                context.runOnNativeModulesQueueThread(new Runnable() {
                     @Override
                     public void run() {
                         WritableMap event = Arguments.createMap();
@@ -336,6 +346,35 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
             sendEvent(context, CONNECTION_ERROR, null);
 
             return;
+        }
+    }
+
+    @ReactMethod
+    public void disconnect() {
+        try {
+            me_index = 0;
+            ap_index = 0;
+            f_index = 0;
+
+            raw_data = new short[512];
+            raw_data_index = 0;
+
+            // Example of constructor public TgStreamReader(BluetoothAdapter ba, TgStreamHandler tgStreamHandler)
+
+            if (tgStreamReader != null) {
+                if (tgStreamReader.isBTConnected()) {
+                    // Prepare for connecting
+                    tgStreamReader.stop();
+                    tgStreamReader.close();
+                }
+                // (4) Demo of  using connect() and start() to replace connectAndStart(),
+                // please call start() when the state is changed to STATE_CONNECTED
+            }
+
+
+        } catch (Exception e) {
+
+
         }
     }
 
@@ -475,6 +514,14 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                 case MindDataType.CODE_POOR_SIGNAL:
                     short pqValue[] = {(short) data};
                     nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_PQ.value, pqValue, 1);
+                    break;
+                case MindDataType.CODE_EEGPOWER:
+                    EEGPower power = (EEGPower) obj;
+                    if (power.isValidate()) {
+                        Log.d(TAG, "EEGPOWER: " + power.toString());
+                        currentEvent.eegPower = power;
+                        pushEsenseEvent();
+                    }
 
                     break;
                 case MindDataType.CODE_RAW:
@@ -492,8 +539,34 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                     break;
             }
         }
-
     };
+
+    private void pushEsenseEvent() {
+        if (currentEvent.poorSignal != -1 && currentEvent.attention != -1 && currentEvent.meditation != -1 && currentEvent.eegPower != null) {
+            final EsenseEvent ev = currentEvent;
+            context.runOnNativeModulesQueueThread(new Runnable() {
+                @Override
+                public void run() {
+                    WritableMap event = Arguments.createMap();
+                    event.putInt("ts", (int) System.currentTimeMillis() / 1000);
+                    event.putInt("poorSignal", ev.poorSignal);
+                    event.putInt("attention", ev.attention);
+                    event.putInt("meditation", ev.meditation);
+                    event.putInt("delta", ev.eegPower.delta);
+                    event.putInt("theta", ev.eegPower.theta);
+                    event.putInt("lowAlpha", ev.eegPower.lowAlpha);
+                    event.putInt("highAlpha", ev.eegPower.highAlpha);
+                    event.putInt("lowBeta", ev.eegPower.lowBeta);
+                    event.putInt("highBeta", ev.eegPower.highBeta);
+                    event.putInt("lowGamma", ev.eegPower.lowGamma);
+                    event.putInt("midGamma", ev.eegPower.middleGamma);
+
+                    sendEvent(context, ESENSE_EVENT, event);
+                }
+            });
+            currentEvent = new EsenseEvent();
+        }
+    }
 
     @Override
     public Map<String, Object> getConstants() {
@@ -521,6 +594,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
         constants.put(CONNECTION_STATE_RECORDING_END, ConnectionStates.STATE_RECORDING_END);
         constants.put(CONNECTION_STATE_ERROR, ConnectionStates.STATE_ERROR);
         constants.put(CONNECTION_STATE_FAILED, ConnectionStates.STATE_FAILED);
+        constants.put(ESENSE_EVENT, ESENSE_EVENT);
 
         constants.put(ALGO_STATE_BASELINE, NskAlgoState.NSK_ALGO_STATE_COLLECTING_BASELINE_DATA.value);
         constants.put(ALGO_STATE_RUNNING, NskAlgoState.NSK_ALGO_STATE_RUNNING.value);
@@ -537,7 +611,11 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
     }
 
     private void sendEvent(ReactContext reactContext, String eventName, @Nullable WritableMap params) {
-        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+        try {
+            reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+        } catch (Exception ex) {
+
+        }
     }
 
 

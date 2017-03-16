@@ -15,12 +15,15 @@ import {
     DeviceEventEmitter
 } from 'react-native';
 import {
+    VictoryChart,
     VictoryLine
 } from 'victory-native';
 
 
 
-import RNBrainwave from 'react-native-brainwave';
+import {
+    RNBrainwave
+} from 'react-native-brainwave';
 
 export default class App extends Component {
 
@@ -30,7 +33,8 @@ export default class App extends Component {
             connectionState: 'disconnected',
             connected: false,
             signalQuality: '',
-            attention: []
+            attention: [],
+            meditation: []
         };
     }
 
@@ -54,8 +58,14 @@ export default class App extends Component {
                 <Text>
                     {this.state.signalQuality}
                 </Text>
-                {this.renderChart()}
-                
+                <VictoryChart
+                    scale={{ x: "linear", y: "linear" }}
+                >
+                    {this.renderAttentionChart()}
+                    {this.renderMeditationChart()}
+                </VictoryChart>
+
+
 
 
             </View>
@@ -65,17 +75,40 @@ export default class App extends Component {
     componentWillMount() {
         DeviceEventEmitter.addListener(RNBrainwave.CONNECTION_STATE, this.connectionStateChange.bind(this));
         DeviceEventEmitter.addListener(RNBrainwave.SIGNAL_QUALITY, this.signalQualityChange.bind(this));
-        DeviceEventEmitter.addListener(RNBrainwave.ATTENTION_ALGO_INDEX, this.attentionIndexHandler.bind(this));
+        //DeviceEventEmitter.addListener(RNBrainwave.ATTENTION_ALGO_INDEX, this.attentionIndexHandler.bind(this));
+        //DeviceEventEmitter.addListener(RNBrainwave.MEDITATION_ALGO_INDEX, this.meditationIndexHandler.bind(this));
+        DeviceEventEmitter.addListener(RNBrainwave.ESENSE_EVENT, this.esenseEventHandler.bind(this));
         RNBrainwave.setDefaultAlgos();
     }
 
-    renderChart() {
+    renderAttentionChart() {
         if (this.state.attention.length > 0) {
             return (
                 <VictoryLine
                     data={this.state.attention}
                     x="time"
                     y="value"
+                    style={{
+                        data: { stroke: "#ff7171", opacity: 0.7 },
+                    }}
+                />
+            )
+        }
+        else {
+            return null;
+        }
+    }
+
+    renderMeditationChart() {
+        if (this.state.meditation.length > 0) {
+            return (
+                <VictoryLine
+                    data={this.state.meditation}
+                    x="time"
+                    y="value"
+                    style={{
+                        data: { stroke: "#4972f2", opacity: 0.7 },
+                    }}
                 />
             )
         }
@@ -91,7 +124,7 @@ export default class App extends Component {
     disconnect() {
         RNBrainwave.disconnect();
     }
-    
+
     connectionStateChange(event) {
         var stateString = '';
         var connected = false;
@@ -176,7 +209,51 @@ export default class App extends Component {
         this.setState({
             attention: arr
         });
+    }
 
+    meditationIndexHandler(event) {
+        var value = event['value'];
+        var index = 0;
+        var arr = this.state.meditation;
+        if (this.state.meditation.length > 0) {
+            index = arr[arr.length - 1].time + 1;
+        }
+        arr.push({
+            time: index,
+            value: value
+        });
+        if (arr.length > 20) {
+            arr.shift();
+        }
+        this.setState({
+            meditation: arr
+        });
+    }
+
+    esenseEventHandler(event) {
+        var ts = event['ts'];
+        var attention = event['attention'];
+        var meditation = event['meditation'];
+        var arrAtt = this.state.attention;
+        var arrMed = this.state.meditation;
+        arrAtt.push({
+            time: ts,
+            value: attention
+        });
+        if (arrAtt.length > 20) {
+            arrAtt.shift();
+        }
+        arrMed.push({
+            time: ts,
+            value: meditation
+        });
+        if (arrMed.length > 20) {
+            arrMed.shift();
+        }
+        this.setState({
+            attention: arrAtt,
+            meditation: arrMed
+        });
     }
 
 
