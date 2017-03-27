@@ -13,16 +13,14 @@
 // in simulator, canned data will be used instead.
 #if TARGET_IPHONE_SIMULATOR
 //#if 1
-#include "canned_data.c"
+//#include "canned_data.c"
 #else
 #define IOS_DEVICE
 //#include "canned_data.c"
 #endif
 
-#ifdef IOS_DEVICE
 #import "TGStream.h"
 #include <sys/time.h>
-#endif
 
 
 @implementation RNBrainwave
