@@ -12,5 +12,9 @@ react-native-brainwave
 <array>
     <string>com.neurosky.thinkgear</string>
 </array>
+<key>UIBackgroundModes</key>
+<array>
+    <string>bluetooth-central</string>
+</array>
 
 ```
