@@ -12,18 +12,19 @@ import {
     View,
     TouchableOpacity,
     Alert,
-    DeviceEventEmitter
+    DeviceEventEmitter,
+    NativeEventEmitter
 } from 'react-native';
 import {
     VictoryChart,
     VictoryLine
 } from 'victory-native';
 
-
-
 import {
     RNBrainwave
 } from 'react-native-brainwave';
+
+const brainwaveEventEmitter = new NativeEventEmitter(RNBrainwave);
 
 export default class App extends Component {
 
@@ -64,21 +65,30 @@ export default class App extends Component {
                     {this.renderAttentionChart()}
                     {this.renderMeditationChart()}
                 </VictoryChart>
-
-
-
-
             </View>
         );
     }
 
     componentWillMount() {
-        DeviceEventEmitter.addListener(RNBrainwave.CONNECTION_STATE, this.connectionStateChange.bind(this));
-        DeviceEventEmitter.addListener(RNBrainwave.SIGNAL_QUALITY, this.signalQualityChange.bind(this));
+        //DeviceEventEmitter.addListener(RNBrainwave.CONNECTION_STATE, this.connectionStateChange.bind(this));
+        //DeviceEventEmitter.addListener(RNBrainwave.SIGNAL_QUALITY, this.signalQualityChange.bind(this));
         //DeviceEventEmitter.addListener(RNBrainwave.ATTENTION_ALGO_INDEX, this.attentionIndexHandler.bind(this));
         //DeviceEventEmitter.addListener(RNBrainwave.MEDITATION_ALGO_INDEX, this.meditationIndexHandler.bind(this));
-        DeviceEventEmitter.addListener(RNBrainwave.ESENSE_EVENT, this.esenseEventHandler.bind(this));
+        //DeviceEventEmitter.addListener(RNBrainwave.ESENSE_EVENT, this.esenseEventHandler.bind(this));
+
+        this.subscriptionConnectionState = brainwaveEventEmitter.addListener(RNBrainwave.CONNECTION_STATE, this.connectionStateChange.bind(this));
+        this.subscriptionSignalQuality = brainwaveEventEmitter.addListener(RNBrainwave.SIGNAL_QUALITY, this.signalQualityChange.bind(this));
+        //this.subscriptionFamiliarity = brainwaveEventEmitter.addListener(RNBrainwave.FAMILIARITY_ALGO_INDEX, this.familiarityIndexHandler.bind(this));
+        this.subscriptionEsense = brainwaveEventEmitter.addListener(RNBrainwave.ESENSE_EVENT, this.esenseEventHandler.bind(this));
+
         RNBrainwave.setDefaultAlgos();
+    }
+
+    componentWillUnmount() {
+        this.subscriptionConnectionState.remove();
+        this.subscriptionSignalQuality.remove();
+        //this.subscriptionFamiliarity.remove();
+        this.subscriptionEsense.remove();
     }
 
     renderAttentionChart() {

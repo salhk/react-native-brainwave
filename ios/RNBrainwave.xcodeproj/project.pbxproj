@@ -12,6 +12,7 @@
 		BF2BD0AE1E551420008C679A /* StreamSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2BD0AB1E551420008C679A /* StreamSDK.a */; };
 		BF70BD851E66835000F2C1F4 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BD841E66835000F2C1F4 /* Accelerate.framework */; };
 		BF70BE1C1E6715F300F2C1F4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BE1B1E6715F300F2C1F4 /* Foundation.framework */; };
+		BFB8257D1EC351E100E67331 /* EsenseEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB8257C1EC351E100E67331 /* EsenseEvent.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -39,6 +40,8 @@
 		BF2BD0AB1E551420008C679A /* StreamSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = StreamSDK.a; sourceTree = "<group>"; };
 		BF70BD841E66835000F2C1F4 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		BF70BE1B1E6715F300F2C1F4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BFB8257B1EC348EF00E67331 /* EsenseEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EsenseEvent.h; sourceTree = "<group>"; };
+		BFB8257C1EC351E100E67331 /* EsenseEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EsenseEvent.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +81,8 @@
 			children = (
 				BF2BD0A51E551420008C679A /* RNBrainwave.h */,
 				BF2BD0A61E551420008C679A /* RNBrainwave.m */,
+				BFB8257B1EC348EF00E67331 /* EsenseEvent.h */,
+				BFB8257C1EC351E100E67331 /* EsenseEvent.m */,
 			);
 			path = RNBrainwave;
 			sourceTree = "<group>";
@@ -155,6 +160,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF2BD0AD1E551420008C679A /* RNBrainwave.m in Sources */,
+				BFB8257D1EC351E100E67331 /* EsenseEvent.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

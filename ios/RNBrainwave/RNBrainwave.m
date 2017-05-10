@@ -22,6 +22,9 @@
 #import "TGStream.h"
 #include <sys/time.h>
 
+#import "TGSEEGPower.h"
+#import "EsenseEvent.h"
+
 
 @implementation RNBrainwave
 
@@ -44,7 +47,7 @@ float lAttention = 0;
 float lAppreciation = 0;
 float lMentalEffort_abs = 0, lMentalEffort_diff = 0;
 
-NskAlgoType algoTypes;
+NskAlgoEegType algoTypes;
 
 #ifndef IOS_DEVICE
 #define SAMPLE_COUNT        600
@@ -66,12 +69,20 @@ NSString *const MENTAL_EFFORT_ALGO_INDEX = @"MENTAL_EFFORT_ALGO_INDEX";
 NSString *const MENTAL_EFFORT2_ALGO_INDEX = @"MENTAL_EFFORT2_ALGO_INDEX";
 NSString *const FAMILIARITY_ALGO_INDEX = @"FAMILIARITY_ALGO_INDEX";
 NSString *const FAMILIARITY2_ALGO_INDEX = @"FAMILIARITY2_ALGO_INDEX";
+NSString *const ESENSE_EVENT = @"ESENSE_EVENT";
+
+
+EsenseEvent *currentEvent;
+
 
 
 RCT_EXPORT_MODULE()
 
 - (instancetype)init {
+    self = [super init];
     [[TGStream sharedInstance] setDelegate:self];
+    
+    currentEvent = [EsenseEvent alloc];
 
     return self;
 }
@@ -117,8 +128,9 @@ RCT_EXPORT_METHOD(disconnect)
             level = 3;
             break;
     }
-    [self.bridge.eventDispatcher sendAppEventWithName:SIGNAL_QUALITY
-                                                 body:@{@"level": @(level)}];
+    currentEvent.poorSignal = level;
+    [self pushEsenseEvent];
+    [self sendEventWithName:SIGNAL_QUALITY body:@{@"level": @(level)}];
     
     
     
@@ -132,8 +144,8 @@ static ConnectionStates lastConnectionState = -1;
     
     lastConnectionState = connectionState;
     
-    [self.bridge.eventDispatcher sendAppEventWithName:CONNECTION_STATE
-                                                 body:@{@"connection_state": @(lastConnectionState)}];
+    [self sendEventWithName:CONNECTION_STATE body:@{@"connection_state": @(connectionState)}];
+    
     
     switch (connectionState) {
         case STATE_COMPLETE:
@@ -176,6 +188,9 @@ static ConnectionStates lastConnectionState = -1;
             break;
         case STATE_WORKING:
             NSLog(@"TGStream: working");
+            break;
+        case STATE_GET_DATA_TIME_OUT:
+            
             break;
     }
 }
@@ -243,6 +258,14 @@ int rawCount = 0;
             
         case MindDataType_CODE_EEGPOWER:
             //NSLog(@"%@\n CODE_EEGPOWER %d\n",[self NowString],data);
+            if([obj isKindOfClass:[TGSEEGPower class]])
+            {
+                TGSEEGPower *power = (TGSEEGPower *) obj;
+                currentEvent.eegPower = power;
+                [self pushEsenseEvent];
+                
+                NSLog(@"%@\n CODE_EEGPOWER %@\n",[self NowString],power);
+            }
             break;
             
         case BodyDataType_CODE_HEARTRATE:
@@ -339,7 +362,7 @@ bool bTGStreamInited = false;
         case NskAlgoReasonUserTrigger:
             [stateStr appendString:@" | By user"];
             break;
-        case NskAlgoReasonExpired:
+        /*case NskAlgoReasonExpired:
             
             break;
         case NskAlgoReasonInternetError:
@@ -347,13 +370,13 @@ bool bTGStreamInited = false;
             break;
         case NskAlgoReasonKeyError:
             
-            break;
+            break;*/
     }
     printf("%s", [stateStr UTF8String]);
     printf("\n");
     
-    [self.bridge.eventDispatcher sendAppEventWithName:ALGO_STATE
-                                                 body:@{@"state": @(state)}];
+    
+    [self sendEventWithName:ALGO_STATE body:@{@"connection_state": @(state)}];
 }
 
 -(void) onRecordFail:(RecrodError)flag{
@@ -376,8 +399,8 @@ bool bTGStreamInited = false;
 #endif
     ap_index++;
     
-    [self.bridge.eventDispatcher sendAppEventWithName:APPRECIATION_ALGO_INDEX
-                                                 body:@{@"value": value}];
+    
+    [self sendEventWithName:APPRECIATION_ALGO_INDEX body:@{@"value": value}];
     
 }
 
@@ -390,13 +413,13 @@ bool bTGStreamInited = false;
     me[me_index] = lMentalEffort_abs;
 #endif
     me_index++;
-    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT_ALGO_INDEX
-                                                 body:@{
-                                                        @"abs_me": abs_me,
-                                                        @"diff_me": diff_me,
-                                                        @"max_me": max_me,
-                                                        @"min_me": min_me
-                                                        }];
+    
+    [self sendEventWithName:MENTAL_EFFORT_ALGO_INDEX body:@{
+                                                            @"abs_me": abs_me,
+                                                            @"diff_me": diff_me,
+                                                            @"max_me": max_me,
+                                                            @"min_me": min_me
+                                                            }];
     
 }
 
@@ -405,12 +428,12 @@ bool bTGStreamInited = false;
     
     me2_index++;
     
-    [self.bridge.eventDispatcher sendAppEventWithName:MENTAL_EFFORT2_ALGO_INDEX
-                                                 body:@{
-                                                        @"total_me": total_me,
-                                                        @"me_rate": me_rate,
-                                                        @"changing_rate": changing_rate
-                                                        }];
+    
+    [self sendEventWithName:MENTAL_EFFORT2_ALGO_INDEX body:@{
+                                                            @"total_me": total_me,
+                                                            @"me_rate": me_rate,
+                                                            @"changing_rate": changing_rate
+                                                            }];
 }
 
 - (void)fAlgoIndex:(NSNumber *)abs_f diff_f:(NSNumber *)diff_f max_f:(NSNumber *)max_f min_f:(NSNumber *)min_f {
@@ -421,13 +444,14 @@ bool bTGStreamInited = false;
     f[f_index] = [abs_f floatValue];
 #endif
     f_index++;
-    [self.bridge.eventDispatcher sendAppEventWithName:FAMILIARITY_ALGO_INDEX
-                                                 body:@{
-                                                        @"abs_f": abs_f,
-                                                        @"diff_f": diff_f,
-                                                        @"min_f": min_f,
-                                                        @"max_f": max_f
-                                                        }];
+
+    
+    [self sendEventWithName:FAMILIARITY_ALGO_INDEX body:@{
+                                                            @"abs_f": abs_f,
+                                                            @"diff_f": diff_f,
+                                                            @"min_f": min_f,
+                                                            @"max_f": max_f
+                                                            }];
 }
 
 - (void)f2AlgoIndex:(NSNumber *)progress_level f_degree:(NSNumber *)f_degree {
@@ -440,29 +464,30 @@ bool bTGStreamInited = false;
     });
     f2_index++;
     
-    [self.bridge.eventDispatcher sendAppEventWithName:FAMILIARITY2_ALGO_INDEX
-                                                 body:@{
-                                                        @"progress_level": progress_level,
-                                                        @"f_degree": f_degree
-                                                        }];
+    [self sendEventWithName:FAMILIARITY2_ALGO_INDEX body:@{
+                                                            @"progress_level": progress_level,
+                                                            @"f_degree": f_degree
+                                                            }];
 }
 
 - (void)attAlgoIndex:(NSNumber *)value {
     NSLog(@"Attention: %f", [value floatValue]);
     lAttention = [value floatValue];
+    currentEvent.attention = value;
+    [self pushEsenseEvent];
     
-    [self.bridge.eventDispatcher sendAppEventWithName:ATTENTION_ALGO_INDEX
-                                                 body:@{
-                                                        @"value": value
-                                                        }];
+    [self sendEventWithName:ATTENTION_ALGO_INDEX body:@{
+                                                           @"value": value
+                                                           }];
 }
 
 - (void)medAlgoIndex:(NSNumber *)value {
     NSLog(@"Meditation: %f", [value floatValue]);
     lMeditation = [value floatValue];
+    currentEvent.meditation = value;
+    [self pushEsenseEvent];
     
-    [self.bridge.eventDispatcher sendAppEventWithName:MEDITATION_ALGO_INDEX
-                                                 body:@{
+    [self sendEventWithName:MEDITATION_ALGO_INDEX body:@{
                                                         @"value": value
                                                         }];
 }
@@ -485,9 +510,9 @@ RCT_EXPORT_METHOD(setDefaultAlgos)
 {
     algoTypes = 0;
     //algoTypes |= NskAlgoEegTypeAP;
-    algoTypes |= NskAlgoEegTypeME;
+    //algoTypes |= NskAlgoEegTypeME;
     //algoTypes |= NskAlgoEegTypeME2;
-    algoTypes |= NskAlgoEegTypeF;
+    //algoTypes |= NskAlgoEegTypeF;
     //algoTypes |= NskAlgoEegTypeF2;
     algoTypes |= NskAlgoEegTypeAtt;
     algoTypes |= NskAlgoEegTypeMed;
@@ -497,25 +522,24 @@ RCT_EXPORT_METHOD(setDefaultAlgos)
     dispatch_sync(dispatch_get_main_queue(), ^{
         [self setAlgos:algoTypes];
     });
-    
-    
-
 }
+
 
 RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
 {
     NskAlgoSdk *handle = [NskAlgoSdk sharedInstance];
     handle.delegate = self;
     
-    int ret;
+    NSInteger ret;
     
-    if ((ret = [[NskAlgoSdk sharedInstance] setAlgorithmTypes:algoTypes licenseKey:(char*)"NeuroSky_Release_To_GeneralFreeLicense_Use_Only_Nov 23 2016"]) != 0) {
+    //if ((ret = [[NskAlgoSdk sharedInstance] setAlgorithmTypes:algoTypes licenseKey:(char*)"NeuroSky_Release_To_GeneralFreeLicense_Use_Only_Nov 23 2016"]) != 0) {
+    if ((ret = [[NskAlgoSdk sharedInstance] setAlgorithmTypes:algoTypes]) != 0) {
         
         return;
     }
     
     NSMutableString *version = [NSMutableString stringWithFormat:@"SDK Ver.: %@", [[NskAlgoSdk sharedInstance] getSdkVersion]];
-    if (algoTypes & NskAlgoEegTypeAP) {
+    /*if (algoTypes & NskAlgoEegTypeAP) {
         [version appendFormat:@"\nAppreciation Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeAP]];
     }
     if (algoTypes & NskAlgoEegTypeME) {
@@ -529,7 +553,7 @@ RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
     }
     if (algoTypes & NskAlgoEegTypeF2) {
         [version appendFormat:@"\nFamiliarity 2 Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeF2]];
-    }
+    }*/
     if (algoTypes & NskAlgoEegTypeAtt) {
         [version appendFormat:@"\nAttention Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeAtt]];
     }
@@ -575,6 +599,25 @@ RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
     return [dateFormatter stringFromDate:date];
 }
 
+- (void) pushEsenseEvent {
+    if (currentEvent.poorSignal != -1 && currentEvent.meditation != nil && currentEvent.attention != nil && currentEvent.eegPower != nil) {
+        [self sendEventWithName:ESENSE_EVENT body:@{
+                                                    @"poorSignal": [NSNumber numberWithInt:currentEvent.poorSignal],
+                                                    @"attention": currentEvent.attention,
+                                                    @"meditation": currentEvent.meditation,
+                                                    @"delta": @(currentEvent.eegPower.delta),
+                                                    @"theta": @(currentEvent.eegPower.theta),
+                                                    @"lowAlpha": @(currentEvent.eegPower.lowAlpha),
+                                                    @"highAlpha": @(currentEvent.eegPower.highAlpha),
+                                                    @"lowBeta": @(currentEvent.eegPower.lowBeta),
+                                                    @"highBeta": @(currentEvent.eegPower.highBeta),
+                                                    @"lowGamma": @(currentEvent.eegPower.lowGamma),
+                                                    @"midGamma": @(currentEvent.eegPower.middleGamma)
+                                                    }];
+
+    }
+}
+
 static long long current_timestamp() {
     struct timeval te;
     gettimeofday(&te, NULL);
@@ -613,8 +656,42 @@ static long long current_timestamp() {
              @"SIGNAL_QUALITY_MEDIUM": @(1),
              @"SIGNAL_QUALITY_POOR": @(2),
              @"SIGNAL_QUALITY_NOT_DETECTED": @(3),
+             
+             @"ESENSE_EVENT": @"ESENSE_EVENT"
              };
 }
+/*
+NSString *const CONNECTION_STATE = @"CONNECTION_STATE";
+NSString *const CONNECTION_ERROR = @"CONNECTION_ERROR";
+NSString *const SIGNAL_QUALITY = @"SIGNAL_QUALITY";
+NSString *const ALGO_STATE = @"ALGO_STATE";
+NSString *const ATTENTION_ALGO_INDEX = @"ATTENTION_ALGO_INDEX";
+NSString *const MEDITATION_ALGO_INDEX = @"MEDITATION_ALGO_INDEX";
+NSString *const APPRECIATION_ALGO_INDEX = @"APPRECIATION_ALGO_INDEX";
+NSString *const MENTAL_EFFORT_ALGO_INDEX = @"MENTAL_EFFORT_ALGO_INDEX";
+NSString *const MENTAL_EFFORT2_ALGO_INDEX = @"MENTAL_EFFORT2_ALGO_INDEX";
+NSString *const FAMILIARITY_ALGO_INDEX = @"FAMILIARITY_ALGO_INDEX";
+NSString *const FAMILIARITY2_ALGO_INDEX = @"FAMILIARITY2_ALGO_INDEX";
+NSString *const ESENSE_EVENT = @"ESENSE_EVENT";
+*/
+
+- (NSArray<NSString *> *)supportedEvents
+{
+    return @[
+             CONNECTION_STATE,
+             SIGNAL_QUALITY,
+             ALGO_STATE,
+             ATTENTION_ALGO_INDEX,
+             MEDITATION_ALGO_INDEX,
+             APPRECIATION_ALGO_INDEX,
+             MENTAL_EFFORT_ALGO_INDEX,
+             MENTAL_EFFORT2_ALGO_INDEX,
+             FAMILIARITY_ALGO_INDEX,
+             FAMILIARITY2_ALGO_INDEX,
+             ESENSE_EVENT
+             ];
+}
+
 
 
 

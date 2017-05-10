@@ -12,12 +12,13 @@
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
 #import <AlgoSdk/NskAlgoSdk.h>
+#import <React/RCTEventEmitter.h>
 
 
 #if TARGET_IPHONE_SIMULATOR
 @interface RNBrainwave : NSObject<RCTBridgeModule, NskAlgoSdkDelegate>
 #else
-@interface RNBrainwave : NSObject<RCTBridgeModule, NskAlgoSdkDelegate, TGStreamDelegate>
+@interface RNBrainwave : RCTEventEmitter<RCTBridgeModule, NskAlgoSdkDelegate, TGStreamDelegate>
 #endif
 
 
