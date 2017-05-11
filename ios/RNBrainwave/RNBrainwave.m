@@ -601,7 +601,11 @@ RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
 
 - (void) pushEsenseEvent {
     if (currentEvent.poorSignal != -1 && currentEvent.meditation != nil && currentEvent.attention != nil && currentEvent.eegPower != nil) {
+        NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
+        NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
+
         [self sendEventWithName:ESENSE_EVENT body:@{
+                                                    @"ts": timeStampObj,
                                                     @"poorSignal": [NSNumber numberWithInt:currentEvent.poorSignal],
                                                     @"attention": currentEvent.attention,
                                                     @"meditation": currentEvent.meditation,
@@ -660,20 +664,7 @@ static long long current_timestamp() {
              @"ESENSE_EVENT": @"ESENSE_EVENT"
              };
 }
-/*
-NSString *const CONNECTION_STATE = @"CONNECTION_STATE";
-NSString *const CONNECTION_ERROR = @"CONNECTION_ERROR";
-NSString *const SIGNAL_QUALITY = @"SIGNAL_QUALITY";
-NSString *const ALGO_STATE = @"ALGO_STATE";
-NSString *const ATTENTION_ALGO_INDEX = @"ATTENTION_ALGO_INDEX";
-NSString *const MEDITATION_ALGO_INDEX = @"MEDITATION_ALGO_INDEX";
-NSString *const APPRECIATION_ALGO_INDEX = @"APPRECIATION_ALGO_INDEX";
-NSString *const MENTAL_EFFORT_ALGO_INDEX = @"MENTAL_EFFORT_ALGO_INDEX";
-NSString *const MENTAL_EFFORT2_ALGO_INDEX = @"MENTAL_EFFORT2_ALGO_INDEX";
-NSString *const FAMILIARITY_ALGO_INDEX = @"FAMILIARITY_ALGO_INDEX";
-NSString *const FAMILIARITY2_ALGO_INDEX = @"FAMILIARITY2_ALGO_INDEX";
-NSString *const ESENSE_EVENT = @"ESENSE_EVENT";
-*/
+
 
 - (NSArray<NSString *> *)supportedEvents
 {
