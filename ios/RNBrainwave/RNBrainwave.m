@@ -70,6 +70,7 @@ NSString *const MENTAL_EFFORT2_ALGO_INDEX = @"MENTAL_EFFORT2_ALGO_INDEX";
 NSString *const FAMILIARITY_ALGO_INDEX = @"FAMILIARITY_ALGO_INDEX";
 NSString *const FAMILIARITY2_ALGO_INDEX = @"FAMILIARITY2_ALGO_INDEX";
 NSString *const ESENSE_EVENT = @"ESENSE_EVENT";
+NSString *const RAW_DATA = @"RAW_DATA";
 
 
 EsenseEvent *currentEvent;
@@ -661,7 +662,8 @@ static long long current_timestamp() {
              @"SIGNAL_QUALITY_POOR": @(2),
              @"SIGNAL_QUALITY_NOT_DETECTED": @(3),
              
-             @"ESENSE_EVENT": @"ESENSE_EVENT"
+             @"ESENSE_EVENT": @"ESENSE_EVENT",
+             @"RAW_DATA": RAW_DATA
              };
 }
 
@@ -679,7 +681,8 @@ static long long current_timestamp() {
              MENTAL_EFFORT2_ALGO_INDEX,
              FAMILIARITY_ALGO_INDEX,
              FAMILIARITY2_ALGO_INDEX,
-             ESENSE_EVENT
+             ESENSE_EVENT,
+             RAW_DATA
              ];
 }
 

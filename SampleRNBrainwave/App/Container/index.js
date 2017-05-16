@@ -80,6 +80,7 @@ export default class App extends Component {
         this.subscriptionSignalQuality = brainwaveEventEmitter.addListener(RNBrainwave.SIGNAL_QUALITY, this.signalQualityChange.bind(this));
         //this.subscriptionFamiliarity = brainwaveEventEmitter.addListener(RNBrainwave.FAMILIARITY_ALGO_INDEX, this.familiarityIndexHandler.bind(this));
         this.subscriptionEsense = brainwaveEventEmitter.addListener(RNBrainwave.ESENSE_EVENT, this.esenseEventHandler.bind(this));
+        this.subscriptionRawData = brainwaveEventEmitter.addListener(RNBrainwave.RAW_DATA, this.rawDataHandler.bind(this));
 
         RNBrainwave.setDefaultAlgos();
     }
@@ -89,6 +90,7 @@ export default class App extends Component {
         this.subscriptionSignalQuality.remove();
         //this.subscriptionFamiliarity.remove();
         this.subscriptionEsense.remove();
+        this.subscriptionRawData.remove();
     }
 
     renderAttentionChart() {
@@ -264,6 +266,10 @@ export default class App extends Component {
             attention: arrAtt,
             meditation: arrMed
         });
+    }
+
+    rawDataHandler(event) {
+        console.log(event['data']);
     }
 
 

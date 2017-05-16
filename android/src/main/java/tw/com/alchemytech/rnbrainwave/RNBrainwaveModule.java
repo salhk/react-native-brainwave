@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.neurosky.AlgoSdk.NskAlgoDataType;
@@ -88,6 +89,8 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
     private static final String CONNECTION_STATE_ERROR = "CONNECTION_STATE_ERROR";
     private static final String CONNECTION_STATE_FAILED = "CONNECTION_STATE_FAILED";
     private static final String ESENSE_EVENT = "ESENSE_EVENT";
+    private static final String RAW_DATA = "RAW_DATA";
+    private static final String RAW_DATA_REALTIME = "RAW_DATA_REALTIME";
 
     private static final String ALGO_STATE_BASELINE = "ALGO_STATE_BASELINE";
     private static final String ALGO_STATE_RUNNING = "ALGO_STATE_RUNNING";
@@ -531,6 +534,26 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                     }
                     raw_data[raw_data_index++] = (short) data;
                     if (raw_data_index == 512) {
+                        WritableMap event = Arguments.createMap();
+                        //event.putInt(RAW_DATA, );
+                        //event.putArray(RAW_DATA, raw_data);
+                        String arr = "";
+                        if (raw_data.length > 0) {
+                            StringBuilder bd = new StringBuilder();
+
+                            for (short n : raw_data) {
+                                bd.append(n);
+                                bd.append(",");
+                            }
+
+                            bd.deleteCharAt(bd.length() - 1);
+
+                            arr = bd.toString();
+                        }
+                        event.putString("data", arr);
+
+                        sendEvent(context, RAW_DATA, event);
+
                         nskAlgoSdk.NskAlgoDataStream(NskAlgoDataType.NSK_ALGO_DATA_TYPE_EEG.value, raw_data, raw_data_index);
                         raw_data_index = 0;
                     }
@@ -595,6 +618,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
         constants.put(CONNECTION_STATE_ERROR, ConnectionStates.STATE_ERROR);
         constants.put(CONNECTION_STATE_FAILED, ConnectionStates.STATE_FAILED);
         constants.put(ESENSE_EVENT, ESENSE_EVENT);
+        constants.put(RAW_DATA, RAW_DATA);
 
         constants.put(ALGO_STATE_BASELINE, NskAlgoState.NSK_ALGO_STATE_COLLECTING_BASELINE_DATA.value);
         constants.put(ALGO_STATE_RUNNING, NskAlgoState.NSK_ALGO_STATE_RUNNING.value);
