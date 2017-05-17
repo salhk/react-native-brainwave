@@ -7,7 +7,7 @@
 //
 
 
-#import "TGSEEGPower.h"
+#import "EEGPower.h"
 
 @interface EsenseEvent : NSObject
 
@@ -15,7 +15,7 @@
 @property int poorSignal;
 @property NSNumber *attention;
 @property NSNumber *meditation;
-@property TGSEEGPower* eegPower;
+@property EEGPower* eegPower;
 
 
 

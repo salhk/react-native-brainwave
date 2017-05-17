@@ -269,7 +269,7 @@ export default class App extends Component {
     }
 
     rawDataHandler(event) {
-        console.log(event['data']);
+        //console.log(event['data']);
     }
 
 

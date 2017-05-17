@@ -7,7 +7,8 @@ react-native-brainwave
 - add AlgoSdk.framework to project embedded binaries Project -> General -> Embedded Binaries
 - add AlgoSdk.framework from ios/ folder
 - add following to info.plist
-```
+
+```plist
 <key>UISupportedExternalAccessoryProtocols</key>
 <array>
     <string>com.neurosky.thinkgear</string>

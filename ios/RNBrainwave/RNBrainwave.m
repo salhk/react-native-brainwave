@@ -19,7 +19,7 @@
 //#include "canned_data.c"
 #endif
 
-#import "TGStream.h"
+//#import "TGStream.h"
 #include <sys/time.h>
 
 #import "TGSEEGPower.h"
@@ -58,6 +58,18 @@ float f2[SAMPLE_COUNT];
 #endif
 int bp_index = 0;
 
+MWMDevice *mwDevice;
+NSArray *devicesArray;
+NSMutableArray *tempDevicesArray;
+NSMutableArray *devNameArray;
+NSMutableArray *mfgIDArray;
+
+//There's two types devices
+NSMutableArray *deviceTypeArray;
+
+int rawCount = 0;
+int16_t rawData[512];
+
 NSString *const CONNECTION_STATE = @"CONNECTION_STATE";
 NSString *const CONNECTION_ERROR = @"CONNECTION_ERROR";
 NSString *const SIGNAL_QUALITY = @"SIGNAL_QUALITY";
@@ -75,15 +87,20 @@ NSString *const RAW_DATA = @"RAW_DATA";
 
 EsenseEvent *currentEvent;
 
+NSTimeInterval lastEsenseTimestamp;
+
 
 
 RCT_EXPORT_MODULE()
 
 - (instancetype)init {
     self = [super init];
-    [[TGStream sharedInstance] setDelegate:self];
+    mwDevice = [MWMDevice sharedInstance];
+    [mwDevice setDelegate:self];
+    [mwDevice enableConsoleLog:YES];
     
-    currentEvent = [EsenseEvent alloc];
+    currentEvent = [[EsenseEvent alloc] init];
+    currentEvent.eegPower = [EEGPower alloc];
 
     return self;
 }
@@ -92,7 +109,17 @@ RCT_EXPORT_METHOD(connect)
 {
     dispatch_sync(dispatch_get_main_queue(), ^{
         bTGStreamInited= false;
-        [[TGStream sharedInstance] initConnectWithAccessorySession];
+        
+        tempDevicesArray = [[NSMutableArray alloc] init];
+        devicesArray = tempDevicesArray;
+        
+        deviceTypeArray =[[NSMutableArray alloc] init];
+        devNameArray = [[NSMutableArray alloc] init];
+        
+        mfgIDArray = [[NSMutableArray alloc] init];
+        [self sendEventWithName:CONNECTION_STATE body:@{@"connection_state": @(STATE_CONNECTING)}];
+
+        [mwDevice scanDevice];
         bRunning = FALSE;
     });
 }
@@ -100,9 +127,161 @@ RCT_EXPORT_METHOD(connect)
 RCT_EXPORT_METHOD(disconnect)
 {
     dispatch_sync(dispatch_get_main_queue(), ^{
-        [[TGStream sharedInstance] tearDownAccessorySession];
+        [mwDevice disconnectDevice];
     });
 }
+
+//MWM Device delegate-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->-->
+-(void)deviceFound:(NSString *)devName MfgID:(NSString *)mfgID DeviceID:(NSString *)deviceID
+{
+    //mfgID is null or @"", NULL
+    if ([mfgID isEqualToString:@""] || nil == mfgID || NULL == mfgID) {
+        return;
+    }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{  // do all alerts on the main thread
+        
+        if (![devicesArray containsObject:deviceID])
+        {
+            [tempDevicesArray addObject:deviceID];
+            devicesArray = tempDevicesArray;
+            [devNameArray addObject:devName];
+            [mfgIDArray addObject:mfgID];
+            //store
+            [deviceTypeArray addObject:@0];
+        }
+        
+        if (devicesArray.count > 0) {
+            NSString *deviceID = [devicesArray objectAtIndex:0];
+            [mwDevice connectDevice:deviceID];
+        }
+    });
+}
+
+-(void)didConnect
+{
+    NSLog(@"%s", __func__);
+    [[MWMDevice sharedInstance] enableLoggingWithOptions:LoggingOptions_Processed | LoggingOptions_Raw];
+    
+    [self sendEventWithName:CONNECTION_STATE body:@{@"connection_state": @(STATE_WORKING)}];
+}
+
+-(void)didDisconnect
+{
+    NSLog(@"%s", __func__);
+    [self sendEventWithName:CONNECTION_STATE body:@{@"connection_state": @(STATE_DISCONNECTED)}];
+}
+
+-(void)eegSample:(int)sample
+{
+    rawData[rawCount] = (int16_t)sample;
+    rawCount++;
+    //[self addValue:@(data) array:self->eegIndex];
+    if (bRunning == FALSE) {
+        [[NskAlgoSdk sharedInstance] startProcess];
+        bRunning = TRUE;
+        return;
+    }
+    int16_t eeg_data[1];
+    eeg_data[0] = (int16_t)sample;
+    [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeEEG data:eeg_data length:1];
+    if (rawCount >= 512) {
+        rawCount = 0;
+        NSMutableString *arr = [[NSMutableString alloc] init];
+        for (int i = 0; i < 512; i++) {
+            if (i < 511) {
+                [arr appendString:[NSString stringWithFormat:@"%i,", rawData[i]]];
+            }
+            else {
+                [arr appendString:[NSString stringWithFormat:@"%i", rawData[i]]];
+            }
+        }
+        
+        [self sendEventWithName:RAW_DATA body:@{
+                                                @"data": arr
+                                                }];
+    }
+};
+
+-(void)eegPowerLowBeta:(int)lowBeta HighBeta:(int)highBeta LowGamma:(int)lowGamma MidGamma:(int)midGamma
+{
+    NSLog(@"%s >>>>>>>-----eegPower: lowBeta:%d highBeta:%d lowGamma:%d midGamma:%d", __func__,  lowBeta, highBeta, lowGamma, midGamma);
+    
+    currentEvent.eegPower.lowBeta = lowBeta;
+    currentEvent.eegPower.highBeta = highBeta;
+    currentEvent.eegPower.lowGamma = lowGamma;
+    currentEvent.eegPower.midGamma = midGamma;
+    [self pushEsenseEvent];
+}
+
+-(void)eegPowerDelta:(int)delta Theta:(int)theta LowAlpha:(int)lowAplpha HighAlpha:(int)highAlpha
+{
+    NSLog(@"%s >>>>>>>-----eegPower: delta:%d theta:%d lowAplpha:%d hightAlpha:%d", __func__,  delta, theta, lowAplpha, highAlpha);
+    
+    currentEvent.eegPower.delta = delta;
+    currentEvent.eegPower.theta = theta;
+    currentEvent.eegPower.lowAlpha = lowAplpha;
+    currentEvent.eegPower.highAlpha = highAlpha;
+    [self pushEsenseEvent];
+}
+
+-(void)eSense:(int)poorSignal Attention:(int)attention Meditation:(int)meditation
+{
+    NSLog(@"%s >>>>>>>-----eSense:%d Attention:%d Meditation:%d", __func__,  poorSignal, attention, meditation);
+    
+    int level = 0;
+    switch (poorSignal) {
+        case NskAlgoSignalQualityGood:
+            [signalStr appendString:@"Good"];
+            level = 0;
+            break;
+        case NskAlgoSignalQualityMedium:
+            [signalStr appendString:@"Medium"];
+            level = 1;
+            break;
+        case NskAlgoSignalQualityNotDetected:
+            [signalStr appendString:@"Not detected"];
+            level = 2;
+            break;
+        case NskAlgoSignalQualityPoor:
+            [signalStr appendString:@"Poor"];
+            level = 3;
+            break;
+    }
+    currentEvent.poorSignal = level;
+    currentEvent.attention = [NSNumber numberWithInt:attention];
+    currentEvent.meditation = [NSNumber numberWithInt:meditation];
+    [self pushEsenseEvent];
+    [self sendEventWithName:SIGNAL_QUALITY body:@{@"level": @(level)}];
+    printf("%s", [signalStr UTF8String]);
+    printf("\n");
+    
+    int16_t poor_signal[1];
+    poor_signal[0] = (int16_t)level;
+    [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypePQ data:poor_signal length:1];
+    
+    int16_t att[1];
+    att[0] = (int16_t)attention;
+    [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeAtt data:att length:1];
+    
+    int16_t med[1];
+    med[0] = (int16_t)meditation;
+    [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeMed data:med length:1];
+
+}
+
+-(void)eegBlink:(int)blinkValue
+{
+    NSLog(@"%s >>>>>>>-----eegBlink: blinkValue:%d ", __func__,  blinkValue);
+}
+
+-(void)mwmBaudRate:(int)baudRate NotchFilter:(int)notchFilter
+{
+    NSLog(@"%s >>>>>>>-----mwmBaudRate:%d NotchFilter:%d ", __func__,  baudRate, notchFilter);
+}
+
+//<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--
+
 
 - (void)signalQuality:(NskAlgoSignalQuality)signalQuality {
     if (signalStr == nil) {
@@ -164,10 +343,10 @@ static ConnectionStates lastConnectionState = -1;
             break;
         case STATE_DISCONNECTED:
             NSLog(@"TGStream: disconnected");
-            if (bTGStreamInited == true) {
-                [[TGStream sharedInstance] tearDownAccessorySession];
-                bTGStreamInited= false;
-            }
+//            if (bTGStreamInited == true) {
+//                [[TGStream sharedInstance] tearDownAccessorySession];
+//                bTGStreamInited= false;
+//            }
             break;
         case STATE_ERROR:
             NSLog(@"TGStream: error");
@@ -196,8 +375,6 @@ static ConnectionStates lastConnectionState = -1;
     }
 }
 
-
-int rawCount = 0;
 
 #pragma mark
 #pragma COMM SDK Delegate
@@ -259,14 +436,14 @@ int rawCount = 0;
             
         case MindDataType_CODE_EEGPOWER:
             //NSLog(@"%@\n CODE_EEGPOWER %d\n",[self NowString],data);
-            if([obj isKindOfClass:[TGSEEGPower class]])
-            {
-                TGSEEGPower *power = (TGSEEGPower *) obj;
-                currentEvent.eegPower = power;
-                [self pushEsenseEvent];
-                
-                NSLog(@"%@\n CODE_EEGPOWER %@\n",[self NowString],power);
-            }
+//            if([obj isKindOfClass:[TGSEEGPower class]])
+//            {
+//                TGSEEGPower *power = (TGSEEGPower *) obj;
+//                currentEvent.eegPower = power;
+//                [self pushEsenseEvent];
+//                
+//                NSLog(@"%@\n CODE_EEGPOWER %@\n",[self NowString],power);
+//            }
             break;
             
         case BodyDataType_CODE_HEARTRATE:
@@ -601,10 +778,10 @@ RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
 }
 
 - (void) pushEsenseEvent {
-    if (currentEvent.poorSignal != -1 && currentEvent.meditation != nil && currentEvent.attention != nil && currentEvent.eegPower != nil) {
+    if (currentEvent.poorSignal != -1 && currentEvent.meditation != nil && currentEvent.attention != nil && currentEvent.eegPower.delta != -1 && currentEvent.eegPower.lowBeta != -1) {
         NSTimeInterval timeStamp = [[NSDate date] timeIntervalSince1970];
         NSNumber *timeStampObj = [NSNumber numberWithDouble: timeStamp];
-
+        
         [self sendEventWithName:ESENSE_EVENT body:@{
                                                     @"ts": timeStampObj,
                                                     @"poorSignal": [NSNumber numberWithInt:currentEvent.poorSignal],
@@ -617,9 +794,13 @@ RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
                                                     @"lowBeta": @(currentEvent.eegPower.lowBeta),
                                                     @"highBeta": @(currentEvent.eegPower.highBeta),
                                                     @"lowGamma": @(currentEvent.eegPower.lowGamma),
-                                                    @"midGamma": @(currentEvent.eegPower.middleGamma)
+                                                    @"midGamma": @(currentEvent.eegPower.midGamma)
                                                     }];
-
+        
+        
+        
+        currentEvent = [[EsenseEvent alloc] init];
+        currentEvent.eegPower = [EEGPower alloc];
     }
 }
 

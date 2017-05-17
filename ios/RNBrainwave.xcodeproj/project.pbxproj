@@ -9,9 +9,10 @@
 /* Begin PBXBuildFile section */
 		BF20F69E1E56E03100BE3184 /* AlgoSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2BD0A31E551420008C679A /* AlgoSdk.framework */; };
 		BF2BD0AD1E551420008C679A /* RNBrainwave.m in Sources */ = {isa = PBXBuildFile; fileRef = BF2BD0A61E551420008C679A /* RNBrainwave.m */; };
-		BF2BD0AE1E551420008C679A /* StreamSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2BD0AB1E551420008C679A /* StreamSDK.a */; };
 		BF70BD851E66835000F2C1F4 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BD841E66835000F2C1F4 /* Accelerate.framework */; };
 		BF70BE1C1E6715F300F2C1F4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BE1B1E6715F300F2C1F4 /* Foundation.framework */; };
+		BFB707B91ECC39CE00DBB416 /* libMWMSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFB707B51ECC39CE00DBB416 /* libMWMSDK.a */; };
+		BFB707BC1ECC472300DBB416 /* EEGPower.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB707BB1ECC472300DBB416 /* EEGPower.m */; };
 		BFB8257D1EC351E100E67331 /* EsenseEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = BFB8257C1EC351E100E67331 /* EsenseEvent.m */; };
 /* End PBXBuildFile section */
 
@@ -34,12 +35,16 @@
 		BF2BD0A51E551420008C679A /* RNBrainwave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBrainwave.h; sourceTree = "<group>"; };
 		BF2BD0A61E551420008C679A /* RNBrainwave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBrainwave.m; sourceTree = "<group>"; };
 		BF2BD0A71E551420008C679A /* TGSEEGPower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TGSEEGPower.h; path = RNBrainwave/TGSEEGPower.h; sourceTree = "<group>"; };
-		BF2BD0A81E551420008C679A /* TGStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TGStream.h; path = RNBrainwave/TGStream.h; sourceTree = "<group>"; };
 		BF2BD0A91E551420008C679A /* TGStreamDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TGStreamDelegate.h; path = RNBrainwave/TGStreamDelegate.h; sourceTree = "<group>"; };
 		BF2BD0AA1E551420008C679A /* TGStreamEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TGStreamEnum.h; path = RNBrainwave/TGStreamEnum.h; sourceTree = "<group>"; };
-		BF2BD0AB1E551420008C679A /* StreamSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = StreamSDK.a; sourceTree = "<group>"; };
 		BF70BD841E66835000F2C1F4 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		BF70BE1B1E6715F300F2C1F4 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		BFB707B51ECC39CE00DBB416 /* libMWMSDK.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libMWMSDK.a; sourceTree = "<group>"; };
+		BFB707B61ECC39CE00DBB416 /* MWMDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWMDelegate.h; sourceTree = "<group>"; };
+		BFB707B71ECC39CE00DBB416 /* MWMDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWMDevice.h; sourceTree = "<group>"; };
+		BFB707B81ECC39CE00DBB416 /* MWMEnum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MWMEnum.h; sourceTree = "<group>"; };
+		BFB707BA1ECC471500DBB416 /* EEGPower.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EEGPower.h; sourceTree = "<group>"; };
+		BFB707BB1ECC472300DBB416 /* EEGPower.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EEGPower.m; sourceTree = "<group>"; };
 		BFB8257B1EC348EF00E67331 /* EsenseEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EsenseEvent.h; sourceTree = "<group>"; };
 		BFB8257C1EC351E100E67331 /* EsenseEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EsenseEvent.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -49,9 +54,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BF2BD0AE1E551420008C679A /* StreamSDK.a in Frameworks */,
 				BF70BD851E66835000F2C1F4 /* Accelerate.framework in Frameworks */,
 				BF70BE1C1E6715F300F2C1F4 /* Foundation.framework in Frameworks */,
+				BFB707B91ECC39CE00DBB416 /* libMWMSDK.a in Frameworks */,
 				BF20F69E1E56E03100BE3184 /* AlgoSdk.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -70,6 +75,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				BFB707B41ECC39CE00DBB416 /* MWMSDK */,
 				BF916A2E1E5801070077C5A5 /* Frameworks */,
 				BF2BD0A41E551420008C679A /* RNBrainwave */,
 				134814211AA4EA7D00B7C361 /* Products */,
@@ -93,13 +99,25 @@
 				BF70BE1B1E6715F300F2C1F4 /* Foundation.framework */,
 				BF70BD841E66835000F2C1F4 /* Accelerate.framework */,
 				BF2BD0A31E551420008C679A /* AlgoSdk.framework */,
-				BF2BD0AB1E551420008C679A /* StreamSDK.a */,
 				BF2BD0A71E551420008C679A /* TGSEEGPower.h */,
-				BF2BD0A81E551420008C679A /* TGStream.h */,
 				BF2BD0A91E551420008C679A /* TGStreamDelegate.h */,
 				BF2BD0AA1E551420008C679A /* TGStreamEnum.h */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		BFB707B41ECC39CE00DBB416 /* MWMSDK */ = {
+			isa = PBXGroup;
+			children = (
+				BFB707B51ECC39CE00DBB416 /* libMWMSDK.a */,
+				BFB707B61ECC39CE00DBB416 /* MWMDelegate.h */,
+				BFB707B71ECC39CE00DBB416 /* MWMDevice.h */,
+				BFB707B81ECC39CE00DBB416 /* MWMEnum.h */,
+				BFB707BA1ECC471500DBB416 /* EEGPower.h */,
+				BFB707BB1ECC472300DBB416 /* EEGPower.m */,
+			);
+			name = MWMSDK;
+			path = RNBrainwave/MWMSDK;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -160,6 +178,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BF2BD0AD1E551420008C679A /* RNBrainwave.m in Sources */,
+				BFB707BC1ECC472300DBB416 /* EEGPower.m in Sources */,
 				BFB8257D1EC351E100E67331 /* EsenseEvent.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -265,6 +284,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/RNBrainwave",
+					"$(PROJECT_DIR)/RNBrainwave/MWMSDK",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNBrainwave;
@@ -292,6 +312,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					"$(PROJECT_DIR)/RNBrainwave",
+					"$(PROJECT_DIR)/RNBrainwave/MWMSDK",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = RNBrainwave;
