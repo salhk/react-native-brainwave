@@ -571,7 +571,7 @@ public class RNBrainwaveModule extends ReactContextBaseJavaModule {
                 @Override
                 public void run() {
                     WritableMap event = Arguments.createMap();
-                    event.putInt("ts", (int) System.currentTimeMillis() / 1000);
+                    event.putInt("ts", (int) Math.floor(System.currentTimeMillis() / 1000L));
                     event.putInt("poorSignal", ev.poorSignal);
                     event.putInt("attention", ev.attention);
                     event.putInt("meditation", ev.meditation);

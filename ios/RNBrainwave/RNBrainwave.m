@@ -248,7 +248,7 @@ RCT_EXPORT_METHOD(disconnect)
             level = 3;
             break;
     }
-    if (currentEvent.poorSignal == -1 && currentEvent.attention == nil && currentEvent.meditation == nil) {
+    if (currentEvent.attention == nil && currentEvent.meditation == nil) {
         currentEvent.poorSignal = level;
         currentEvent.attention = [NSNumber numberWithInt:attention];
         currentEvent.meditation = [NSNumber numberWithInt:meditation];
