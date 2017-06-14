@@ -248,11 +248,13 @@ RCT_EXPORT_METHOD(disconnect)
             level = 3;
             break;
     }
-    currentEvent.poorSignal = level;
-    currentEvent.attention = [NSNumber numberWithInt:attention];
-    currentEvent.meditation = [NSNumber numberWithInt:meditation];
-    [self pushEsenseEvent];
-    [self sendEventWithName:SIGNAL_QUALITY body:@{@"level": @(level)}];
+    if (currentEvent.poorSignal == -1 && currentEvent.attention == nil && currentEvent.meditation == nil) {
+        currentEvent.poorSignal = level;
+        currentEvent.attention = [NSNumber numberWithInt:attention];
+        currentEvent.meditation = [NSNumber numberWithInt:meditation];
+        [self pushEsenseEvent];
+        [self sendEventWithName:SIGNAL_QUALITY body:@{@"level": @(level)}];
+    }
     printf("%s", [signalStr UTF8String]);
     printf("\n");
     
@@ -796,7 +798,6 @@ RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
                                                     @"lowGamma": @(currentEvent.eegPower.lowGamma),
                                                     @"midGamma": @(currentEvent.eegPower.midGamma)
                                                     }];
-        
         
         
         currentEvent = [[EsenseEvent alloc] init];
