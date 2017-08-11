@@ -10,7 +10,7 @@
     "react": "^15.4.2",
     "react-native": "0.42.0",
     "react-native-brainwave": "file:../",
-    "react-native-svg":"https://github.com/bamlab/react-native-svg.git",
+    "react-native-svg": "https://github.com/bamlab/react-native-svg.git",
     "victory-native": "^0.6.0"
   },
   "devDependencies": {
