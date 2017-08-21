@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		BF20F69E1E56E03100BE3184 /* AlgoSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2BD0A31E551420008C679A /* AlgoSdk.framework */; };
 		BF2BD0AD1E551420008C679A /* RNBrainwave.m in Sources */ = {isa = PBXBuildFile; fileRef = BF2BD0A61E551420008C679A /* RNBrainwave.m */; };
 		BF70BD851E66835000F2C1F4 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BD841E66835000F2C1F4 /* Accelerate.framework */; };
 		BF70BE1C1E6715F300F2C1F4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BE1B1E6715F300F2C1F4 /* Foundation.framework */; };
@@ -31,7 +30,6 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNBrainwave.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNBrainwave.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		BF2BD0A31E551420008C679A /* AlgoSdk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AlgoSdk.framework; sourceTree = "<group>"; };
 		BF2BD0A51E551420008C679A /* RNBrainwave.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNBrainwave.h; sourceTree = "<group>"; };
 		BF2BD0A61E551420008C679A /* RNBrainwave.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNBrainwave.m; sourceTree = "<group>"; };
 		BF2BD0A71E551420008C679A /* TGSEEGPower.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TGSEEGPower.h; path = RNBrainwave/TGSEEGPower.h; sourceTree = "<group>"; };
@@ -57,7 +55,6 @@
 				BF70BD851E66835000F2C1F4 /* Accelerate.framework in Frameworks */,
 				BF70BE1C1E6715F300F2C1F4 /* Foundation.framework in Frameworks */,
 				BFB707B91ECC39CE00DBB416 /* libMWMSDK.a in Frameworks */,
-				BF20F69E1E56E03100BE3184 /* AlgoSdk.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,7 +95,6 @@
 			children = (
 				BF70BE1B1E6715F300F2C1F4 /* Foundation.framework */,
 				BF70BD841E66835000F2C1F4 /* Accelerate.framework */,
-				BF2BD0A31E551420008C679A /* AlgoSdk.framework */,
 				BF2BD0A71E551420008C679A /* TGSEEGPower.h */,
 				BF2BD0A91E551420008C679A /* TGStreamDelegate.h */,
 				BF2BD0AA1E551420008C679A /* TGStreamEnum.h */,
@@ -273,6 +269,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -301,6 +298,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				ENABLE_BITCODE = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",

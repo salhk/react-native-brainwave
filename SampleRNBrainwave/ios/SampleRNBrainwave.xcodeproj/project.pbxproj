@@ -38,8 +38,6 @@
 		620FB883A79D4FA59DBE6789 /* libRNSVG.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C011F53006784C6D9C7BB5BB /* libRNSVG.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		BF2C75D11E5D89DB0039D898 /* libRNBrainwave.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BF80F0D71E5C930C00B1E09B /* libRNBrainwave.a */; };
-		BF4D161C1E5DC59F0019FE2F /* AlgoSdk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BF2C75EC1E5D8C2D0039D898 /* AlgoSdk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BF4D16211E5DCB310019FE2F /* AlgoSdk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF2C75EC1E5D8C2D0039D898 /* AlgoSdk.framework */; };
 		BF70BE1E1E67172E00F2C1F4 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BE1D1E67172E00F2C1F4 /* Accelerate.framework */; };
 		BF70BE3B1E67173500F2C1F4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF70BE3A1E67173500F2C1F4 /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -250,20 +248,6 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		BF4D161D1E5DC59F0019FE2F /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				BF4D161C1E5DC59F0019FE2F /* AlgoSdk.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTActionSheet.xcodeproj; path = "../node_modules/react-native/Libraries/ActionSheetIOS/RCTActionSheet.xcodeproj"; sourceTree = "<group>"; };
@@ -313,7 +297,6 @@
 			files = (
 				BF70BE3B1E67173500F2C1F4 /* Foundation.framework in Frameworks */,
 				BF70BE1E1E67172E00F2C1F4 /* Accelerate.framework in Frameworks */,
-				BF4D16211E5DCB310019FE2F /* AlgoSdk.framework in Frameworks */,
 				BF2C75D11E5D89DB0039D898 /* libRNBrainwave.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */,
@@ -588,7 +571,6 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				BF4D161D1E5DC59F0019FE2F /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

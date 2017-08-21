@@ -11,16 +11,15 @@
 #endif
 #import <Foundation/Foundation.h>
 #import <React/RCTBridgeModule.h>
-#import <AlgoSdk/NskAlgoSdk.h>
 #import <React/RCTEventEmitter.h>
 #import "MWMDelegate.h"
 #import "MWMDevice.h"
 
 
 #if TARGET_IPHONE_SIMULATOR
-@interface RNBrainwave : NSObject<RCTBridgeModule, NskAlgoSdkDelegate>
+@interface RNBrainwave : NSObject<RCTBridgeModule>
 #else
-@interface RNBrainwave : RCTEventEmitter<RCTBridgeModule, NskAlgoSdkDelegate, MWMDelegate>
+@interface RNBrainwave : RCTEventEmitter<RCTBridgeModule, MWMDelegate>
 #endif
 
 

@@ -47,7 +47,7 @@ float lAttention = 0;
 float lAppreciation = 0;
 float lMentalEffort_abs = 0, lMentalEffort_diff = 0;
 
-NskAlgoEegType algoTypes;
+//NskAlgoEegType algoTypes;
 
 #ifndef IOS_DEVICE
 #define SAMPLE_COUNT        600
@@ -178,13 +178,13 @@ RCT_EXPORT_METHOD(disconnect)
     rawCount++;
     //[self addValue:@(data) array:self->eegIndex];
     if (bRunning == FALSE) {
-        [[NskAlgoSdk sharedInstance] startProcess];
+        //[[NskAlgoSdk sharedInstance] startProcess];
         bRunning = TRUE;
         return;
     }
     int16_t eeg_data[1];
     eeg_data[0] = (int16_t)sample;
-    [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeEEG data:eeg_data length:1];
+    //[[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeEEG data:eeg_data length:1];
     if (rawCount >= 512) {
         rawCount = 0;
         NSMutableString *arr = [[NSMutableString alloc] init];
@@ -235,19 +235,19 @@ RCT_EXPORT_METHOD(disconnect)
     
     int level = 0;
     switch (poorSignal) {
-        case NskAlgoSignalQualityGood:
+        case 0://case NskAlgoSignalQualityGood:
             [signalStr appendString:@"Good"];
             level = 0;
             break;
-        case NskAlgoSignalQualityMedium:
+        case 1://case NskAlgoSignalQualityMedium:
             [signalStr appendString:@"Medium"];
             level = 1;
             break;
-        case NskAlgoSignalQualityNotDetected:
+        case 2://case NskAlgoSignalQualityNotDetected:
             [signalStr appendString:@"Not detected"];
             level = 2;
             break;
-        case NskAlgoSignalQualityPoor:
+        case 3://case NskAlgoSignalQualityPoor:
             [signalStr appendString:@"Poor"];
             level = 3;
             break;
@@ -264,15 +264,15 @@ RCT_EXPORT_METHOD(disconnect)
     
     int16_t poor_signal[1];
     poor_signal[0] = (int16_t)level;
-    [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypePQ data:poor_signal length:1];
+    //[[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypePQ data:poor_signal length:1];
     
     int16_t att[1];
     att[0] = (int16_t)attention;
-    [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeAtt data:att length:1];
+    //[[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeAtt data:att length:1];
     
     int16_t med[1];
     med[0] = (int16_t)meditation;
-    [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeMed data:med length:1];
+    //[[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeMed data:med length:1];
     
 }
 
@@ -289,7 +289,7 @@ RCT_EXPORT_METHOD(disconnect)
 //<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--<--
 
 
-- (void)signalQuality:(NskAlgoSignalQuality)signalQuality {
+/*- (void)signalQuality:(NskAlgoSignalQuality)signalQuality {
     if (signalStr == nil) {
         signalStr = [[NSMutableString alloc] init];
     }
@@ -322,7 +322,7 @@ RCT_EXPORT_METHOD(disconnect)
     
     printf("%s", [signalStr UTF8String]);
     printf("\n");
-}
+}*/
 
 static ConnectionStates lastConnectionState = -1;
 -(void)onStatesChanged:(ConnectionStates)connectionState{
@@ -402,7 +402,7 @@ static ConnectionStates lastConnectionState = -1;
         {
             int16_t poor_signal[1];
             poor_signal[0] = (int16_t)data;
-            [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypePQ data:poor_signal length:1];
+            //[[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypePQ data:poor_signal length:1];
         }
             break;
             
@@ -410,14 +410,14 @@ static ConnectionStates lastConnectionState = -1;
             rawCount++;
             //[self addValue:@(data) array:self->eegIndex];
             if (bRunning == FALSE) {
-                [[NskAlgoSdk sharedInstance] startProcess];
+                //[[NskAlgoSdk sharedInstance] startProcess];
                 bRunning = TRUE;
                 return;
             }
         {
             int16_t eeg_data[1];
             eeg_data[0] = (int16_t)data;
-            [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeEEG data:eeg_data length:1];
+            //[[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeEEG data:eeg_data length:1];
         }
             //NSLog(@"%@\n CODE_RAW %d\n",[self NowString],data);
             break;
@@ -426,7 +426,7 @@ static ConnectionStates lastConnectionState = -1;
         {
             int16_t attention[1];
             attention[0] = (int16_t)data;
-            [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeAtt data:attention length:1];
+            //[[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeAtt data:attention length:1];
         }
             //NSLog(@"%@\n CODE_ATTENTION %d\n",[self NowString],data);
             break;
@@ -435,7 +435,7 @@ static ConnectionStates lastConnectionState = -1;
         {
             int16_t meditation[1];
             meditation[0] = (int16_t)data;
-            [[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeMed data:meditation length:1];
+            //[[NskAlgoSdk sharedInstance] dataStream:NskAlgoDataTypeMed data:meditation length:1];
         }
             //NSLog(@"%@\n CODE_MEDITATION %d\n",[self NowString],data);
             break;
@@ -475,7 +475,7 @@ bool bTGStreamInited = false;
 
 #pragma mark
 #pragma NSK EEG SDK Delegate
-- (void)stateChanged:(NskAlgoState)state reason:(NskAlgoReason)reason {
+/*- (void)stateChanged:(NskAlgoState)state reason:(NskAlgoReason)reason {
     if (stateStr == nil) {
         stateStr = [[NSMutableString alloc] init];
     }
@@ -546,7 +546,7 @@ bool bTGStreamInited = false;
         case NskAlgoReasonUserTrigger:
             [stateStr appendString:@" | By user"];
             break;
-            /*case NskAlgoReasonExpired:
+            case NskAlgoReasonExpired:
              
              break;
              case NskAlgoReasonInternetError:
@@ -554,14 +554,14 @@ bool bTGStreamInited = false;
              break;
              case NskAlgoReasonKeyError:
              
-             break;*/
+             break;
     }
     printf("%s", [stateStr UTF8String]);
     printf("\n");
     
     
     [self sendEventWithName:ALGO_STATE body:@{@"connection_state": @(state)}];
-}
+}*/
 
 -(void) onRecordFail:(RecrodError)flag{
     NSLog(@"%@\n Record Fail:%lu\n",[self NowString],(unsigned long)flag);
@@ -692,26 +692,26 @@ BOOL bBlink = NO;
 
 RCT_EXPORT_METHOD(setDefaultAlgos)
 {
-    algoTypes = 0;
+    //algoTypes = 0;
     //algoTypes |= NskAlgoEegTypeAP;
     //algoTypes |= NskAlgoEegTypeME;
     //algoTypes |= NskAlgoEegTypeME2;
     //algoTypes |= NskAlgoEegTypeF;
     //algoTypes |= NskAlgoEegTypeF2;
-    algoTypes |= NskAlgoEegTypeAtt;
-    algoTypes |= NskAlgoEegTypeMed;
+    //algoTypes |= NskAlgoEegTypeAtt;
+    //algoTypes |= NskAlgoEegTypeMed;
     //algoTypes |= NskAlgoEegTypeBP;
     //algoTypes |= NskAlgoEegTypeBlink;
     
     dispatch_sync(dispatch_get_main_queue(), ^{
-        [self setAlgos:algoTypes];
+        //[self setAlgos:algoTypes];
     });
 }
 
 
 RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
 {
-    NskAlgoSdk *handle = [NskAlgoSdk sharedInstance];
+    /*NskAlgoSdk *handle = [NskAlgoSdk sharedInstance];
     handle.delegate = self;
     
     NSInteger ret;
@@ -720,9 +720,9 @@ RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
     if ((ret = [[NskAlgoSdk sharedInstance] setAlgorithmTypes:algoTypes]) != 0) {
         
         return;
-    }
+    }*/
     
-    NSMutableString *version = [NSMutableString stringWithFormat:@"SDK Ver.: %@", [[NskAlgoSdk sharedInstance] getSdkVersion]];
+    //NSMutableString *version = [NSMutableString stringWithFormat:@"SDK Ver.: %@", [[NskAlgoSdk sharedInstance] getSdkVersion]];
     /*if (algoTypes & NskAlgoEegTypeAP) {
      [version appendFormat:@"\nAppreciation Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeAP]];
      }
@@ -738,7 +738,7 @@ RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
      if (algoTypes & NskAlgoEegTypeF2) {
      [version appendFormat:@"\nFamiliarity 2 Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeF2]];
      }*/
-    if (algoTypes & NskAlgoEegTypeAtt) {
+    /*if (algoTypes & NskAlgoEegTypeAtt) {
         [version appendFormat:@"\nAttention Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeAtt]];
     }
     if (algoTypes & NskAlgoEegTypeMed) {
@@ -751,7 +751,7 @@ RCT_EXPORT_METHOD(setAlgos:(NSInteger)algoTypes)
         [version appendFormat:@"\nBlink Detection Ver.: %@", [[NskAlgoSdk sharedInstance] getAlgoVersion:NskAlgoEegTypeBlink]];
     }
     
-    NSLog(@"%@", version);
+    NSLog(@"%@", version);*/
     
 }
 
