@@ -35,7 +35,8 @@ export default class App extends Component {
             connected: false,
             signalQuality: '',
             attention: [],
-            meditation: []
+            meditation: [],
+            esense: {}
         };
     }
 
@@ -65,6 +66,30 @@ export default class App extends Component {
                     {this.renderAttentionChart()}
                     {this.renderMeditationChart()}
                 </VictoryChart>
+                <Text>
+                    delta:{this.state.esense.delta}
+                </Text>
+                <Text>
+                    theta:{this.state.esense.theta}
+                </Text>
+                <Text>
+                    lowAlpha:{this.state.esense.lowAlpha}
+                </Text>
+                <Text>
+                    highAlpha:{this.state.esense.highAlpha}
+                </Text>
+                <Text>
+                    lowBeta:{this.state.esense.lowBeta}
+                </Text>
+                <Text>
+                    highBeta:{this.state.esense.highBeta}
+                </Text>
+                <Text>
+                    lowGamma:{this.state.esense.lowGamma}
+                </Text>
+                <Text>
+                    midGamma:{this.state.esense.midGamma}
+                </Text>
             </View>
         );
     }
@@ -264,7 +289,8 @@ export default class App extends Component {
         }
         this.setState({
             attention: arrAtt,
-            meditation: arrMed
+            meditation: arrMed,
+            esense: event
         });
     }
 
